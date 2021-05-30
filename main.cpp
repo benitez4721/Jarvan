@@ -4,6 +4,7 @@
 #include<string.h>
 #include<fstream>
 #include<algorithm>
+#include "lexer/lexer.h"
 using namespace std;
 
 string readFile(string filePath);
@@ -12,6 +13,16 @@ string readFile(string filePath);
 int main(int argc, char *argv[]){
     string filePath = argv[1];
     string  program = readFile(filePath);
+    Lexer lexer(program);
+    if(lexer.errors.size() > 0){
+        for(int i = 0; i < lexer.errors.size(); i++){
+            cout << lexer.errors[i].to_str("error");
+        }
+    }else {
+        for(int i = 0; i < lexer.tokens.size(); i++){
+            cout << lexer.tokens[i].to_str("type");
+        }
+    }
     return 0;
 }
 
@@ -29,13 +40,10 @@ string readFile(string filePath){
     // Read each line in the file
     while(!file.eof()){
         getline(file,line);
-        program += line;
+        program += line + '\n';
     }
 
     file.close();
     
-    // Remove whitespaces
-    std::string::iterator end_pos = remove(program.begin(), program.end(), ' ');
-    program.erase(end_pos, program.end());
     return program;
 }
