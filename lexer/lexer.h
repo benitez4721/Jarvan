@@ -12,7 +12,7 @@ class Token {
         int row;
         int column;
         Token(string _token, string _type, int _row, int _column);
-        string to_str(string mode);
+        string to_str();
 };
 
 class Lexer {

@@ -16,11 +16,11 @@ int main(int argc, char *argv[]){
     Lexer lexer(program);
     if(lexer.errors.size() > 0){
         for(int i = 0; i < lexer.errors.size(); i++){
-            cout << lexer.errors[i].to_str("error");
+            cout << lexer.errors[i].to_str();
         }
     }else {
         for(int i = 0; i < lexer.tokens.size(); i++){
-            cout << lexer.tokens[i].to_str("type");
+            cout << lexer.tokens[i].to_str();
         }
     }
     return 0;

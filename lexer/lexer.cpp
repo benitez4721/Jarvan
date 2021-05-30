@@ -85,13 +85,20 @@ Token::Token(string _token, string _type, int _row, int _column) {
             column = _column;
         };
 
-string Token::to_str(string mode){
+string Token::to_str(){
     if(type == "TkError"){
         token.erase(remove(token.begin(), token.end(), '\n'), token.end());
         return "Error: Unexpected character: " + token  + " in row: " + to_string(row) + ", column: " + to_string(column) + '\n';
     }
     else if(type == "TkId" || type == "TkBs" || type == "TkBsf" || type == "TkLabia"){
-        return type + "(\"" + token + "\")" + " " + to_string(row) + " " + to_string(column) + '\n';
+        string token_display;
+        if(type == "TkLabia"){
+            token_display = '(' + token + ')';
+        }
+        else{
+            token_display = "(\"" + token + "\")";
+        }
+        return type + token_display + " " + to_string(row) + " " + to_string(column) + '\n';
     }
     else{
         // Remove line end from token
