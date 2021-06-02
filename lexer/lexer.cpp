@@ -15,7 +15,7 @@ map<string, string> tokensDict = {
     {"{", "TkOblock"},
     {"}", "TkCblock"},
     {"bs", "TkBs"},
-    {"bsf", "TkBs"},
+    {"bsf", "TkBsf"},
     {"qlq", "TkQlq"},
     {"letra", "TkLetra"},
     {"labia", "TkLabia"},
@@ -115,12 +115,35 @@ void Lexer::run(string program){
     int row = 1;
     int column = 1;
     char c;
+    cout << program;
     
     for(int i = 0; i < program.size(); i++) {
-
-        //Comments
+        
         c = program[i];
-        if (c == '#'){
+
+        // Open block
+        if (c == '{') {
+            lexema += c;
+            createToken(lexema, row, column);
+            lexema = "";
+        }
+
+        // Close block
+        else if (c == '}') {
+            if (lexema.size()) {
+                createToken(lexema, row, column);
+                lexema = c;
+                createToken(lexema, row, column);
+                lexema = "";
+            } else {
+                lexema += c;
+                createToken(lexema, row, column);
+                lexema = "";
+            }
+        }
+
+        // Comments
+        else if (c == '#'){
             while(c != '\n'){
                 i++;
                 column++;
@@ -130,54 +153,69 @@ void Lexer::run(string program){
             column = 1;
         }
 
-        //Labias
-        else if (c == '"') {
-            bool  closeStringFound = true;
-            lexema += c;
-            i++;
-            c = program[i];
+        // // Labias
+        // else if (c == '"') {
+        //     bool  closeStringFound = true;
+        //     lexema += c;
+        //     i++;
+        //     c = program[i];
 
-            while (c != '"'){
-                if (c == '\\'){
-                    lexema += c;
-                    i++;
-                    c = program[i];
-                }
-                lexema += c;
-                i++;
-                if(i >= program.size()){
-                    closeStringFound = false;
-                    break;
-                }
-                else{
-                    c = program[i];
-                }
-            }
+        //     while (c != '"'){
+        //         if (c == '\\'){
+        //             lexema += c;
+        //             i++;
+        //             c = program[i];
+        //         }
+        //         lexema += c;
+        //         i++;
+        //         if(i >= program.size()){
+        //             closeStringFound = false;
+        //             break;
+        //         }
+        //         else{
+        //             c = program[i];
+        //         }
+        //     }
 
-            if(closeStringFound){
-                lexema += c;
-            }
-            else{
-                lexema = "\"";
-            }
+        //     if(closeStringFound){
+        //         lexema += c;
+        //     }
+        //     else{
+        //         lexema = "\"";
+        //     }
 
-            createToken(lexema, row, column);
-            column += lexema.size();
-            lexema = "";
-        }
+        //     createToken(lexema, row, column);
+        //     column += lexema.size();
+        //     lexema = "";
+        // }
 
+        // Espacio
         else if(c == ' ') {
             if(lexema.size()){
                 createToken(lexema, row, column);
                 lexema = "";
             }
-            i++;
             column++;
         }
 
+        // Salto de línea
         else if(c == '\n') {
             row++;
             column = 1;
+        }
+
+        // Semicolon
+        else if(c == ';') {
+            if (lexema.size()) {
+                createToken(lexema, row, column);
+                lexema = c;
+                createToken(lexema, row, column);
+                lexema = "";
+            } else {
+                lexema += c;
+                createToken(lexema, row, column);
+                lexema = "";
+            }
         }
 
         else {
@@ -188,11 +226,15 @@ void Lexer::run(string program){
 
     if(lexema.size()){
         createToken(lexema, row, column);
+        lexema = "";
     }
+
 };
 
 void Lexer::createToken(string lexema, int row, int column){
+
     string type = tokensDict[lexema];
+
     if (type == ""){
        if (regex_match(lexema, labia)){
            type = "TkLabia";
@@ -212,6 +254,7 @@ void Lexer::createToken(string lexema, int row, int column){
     }
 
     Token token(lexema, type, row, column);
+
     if (token.type == "TkError"){
         errors.push_back(token);
     }
