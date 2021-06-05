@@ -43,22 +43,23 @@ extern int yycolumn;
 extern char* yytext;
 
 void Lexer::run(){
-    int ntoken, vtoken;
+    int ntoken;
     ntoken = yylex();
     int column = 1;
     int row = yylineno;
-
+    bool isComment = false;
     
     while(ntoken) {
         if(row != yylineno){
             row = yylineno;
             column = 1;
             yycolumn = 2;
+            isComment = false;
         }
         else{
             column = yycolumn - yyleng;  
         }
-        if(nTokens[ntoken] != "ws"){
+        if(nTokens[ntoken] != "ws" && !isComment){
 
             if(ntoken == ERROR){
                 errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
@@ -67,6 +68,12 @@ void Lexer::run(){
                 tokens.push_back(Token(yytext, nTokens[ntoken], yylineno, column ));
             }
         }
+
+        if(ntoken == HASH){
+            isComment = true;
+        }
+        
+
 
         ntoken = yylex();
 
@@ -123,9 +130,7 @@ void Lexer::init_tokens_definitions(){
     nTokens[METELE] = "TkMetele";
     nTokens[SACALE] = "TkSacale";
     nTokens[VOLTEA] = "TkVoltea";
-    nTokens[HASH] = "TkHash";
-    nTokens[OHASH] = "TkOhash";
-    nTokens[CHASH] = "TkChash";
+    nTokens[HASH] = "ws";
     nTokens[ELDA] = "TkElda";
     nTokens[COBA] = "TkCoba";
     nTokens[COMMA] = "TkComma";

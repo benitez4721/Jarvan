@@ -74,8 +74,6 @@ char                    (\".{1}\")
 "sacale"                {return SACALE;}
 "voltea"                {return VOLTEA;}
 "#"                     {return HASH;}
-"/#"                    {return OHASH;}
-"#\\"                   {return CHASH;}
 "elda"                  {return ELDA;}
 "coba"                  {return COBA;}
 ","                     {return COMMA;}
