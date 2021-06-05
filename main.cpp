@@ -7,13 +7,15 @@
 #include "lexer/lexer.h"
 using namespace std;
 
-string readFile(string filePath);
+extern FILE* yyin;
 
 // Recieve file path from command args, example: .\lexer.exe test.txt
 int main(int argc, char *argv[]){
     string filePath = argv[1];
-    string  program = readFile(filePath);
-    Lexer lexer(program);
+    yyin = fopen(argv[1], "r");
+    Lexer lexer;
+    lexer.init_tokens_definitions();
+    lexer.run();
     if(lexer.errors.size() > 0){
         for(int i = 0; i < lexer.errors.size(); i++){
             cout << lexer.errors[i].to_str();
@@ -26,24 +28,24 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-string readFile(string filePath){
-    ifstream file;
-    file.open(filePath, ios::in);
-    string program;
-    string line;
+// string readFile(string filePath){
+//     ifstream file;
+//     file.open(filePath, ios::in);
+//     string program;
+//     string line;
 
-    if(file.fail()){
-        cout<<"Error, file cannot be open.";
-        exit(1);
-    }
+//     if(file.fail()){
+//         cout<<"Error, file cannot be open.";
+//         exit(1);
+//     }
 
-    // Read each line in the file
-    while(!file.eof()){
-        getline(file,line);
-        program += line + '\n';
-    }
+//     // Read each line in the file
+//     while(!file.eof()){
+//         getline(file,line);
+//         program += line + '\n';
+//     }
 
-    file.close();
+//     file.close();
     
-    return program;
-}
+//     return program;
+// }
