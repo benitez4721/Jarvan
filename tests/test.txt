@@ -1,0 +1,8 @@
+    Chamba factorial(bs n){
+           if(n == 0){
+               rescata 1
+           }&&
+           rescata n * factorial(n-1)
+           qlq perro = "u"
+           bululu ver = 1.8
+}
