@@ -28,11 +28,14 @@ char                    (\".{1}\")
 " "                     {return WS;}
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}
+"devalua"               {return DEVALUA;}
+"efectivo"              {return EFECTIVO;}
 "letra"                 {return LETRA;}
 "Beticas"               {return BETICAS;}
 "{"                     {return OBLOCK;}
 "}"                     {return CBLOCK;}
 "qlq"                   {return QLQ;}
+"labia"                 {return LABIA;}
 "bus"                   {return BUS;}
 "bululu"                {return BULULU;}
 "@"                     {return POINTER;}
@@ -66,7 +69,6 @@ char                    (\".{1}\")
 "("                     {return OPAR;}
 ")"                     {return CPAR;}
 "["                     {return OBRACKET;}
-"]"                     {return CBRACKET;}
 "]"                     {return CBRACKET;}
 "tam"                   {return TAM;}
 "sitio"                 {return SITIO;}
