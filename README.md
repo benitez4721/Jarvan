@@ -18,7 +18,7 @@ Un programa en Jarvan podría verse así:
     Beticas 
     bs x,y;
     [bs] z;
-    z = [x,y];
+    z = [x,y]
     if (x > y) {
        metele(z, x) 
     }
@@ -151,20 +151,21 @@ Jarvan cuenta con tipos escalares y tipos compuestos. Toda variable puede ser de
 
 Escalares
 -------------
-- `qlq`: Puede optar por dos valores: `elda` o `coba`, representando el 0 y el 1, respectivamente. `qlq` tiene por default el valor `coba`.
+- `qlq`: Puede optar por dos valores: `coba` o `elda`, representando el 0 y el 1, respectivamente. `qlq` tiene por default el valor `coba`.
 - `bs`: Número entero de 4 bytes (32 bits), complemento a 2.
 - `bsf`: Número punto flotante con precisión sencilla, según norma estándar IEEE 754.
 - `letra`: Caracter ASCII. El valor debe de declararse dentro de comillas simples `''`.
 - `nulo`: Tipo de valor único `nada`.
 -------------
-    ```
-    { Beticas
+```
+    {
+    Beticas
     qlq a = elda;
     letra l = 'A';
     bs e = 1;
-    bsf f = 1.2;
+    bsf f = 1.2
     }
-    ```
+```
 
 Compuestos:
 -------------
@@ -175,16 +176,18 @@ Compuestos:
 - `Bululu`: Registros variantes.
 - Apuntadores `@`: Apuntador a memoria del heap.
 -------------
-{
-    Beticas
-    Labia m = "Hola chamita";
-    [qlq] a = [coba, elda, elda];
-    bs @z;
-    Bus chacaito {
-        bsf pasaje = 10.2 ;
-        labia canto = "Pasaje al entrar";
+```
+    {
+        Beticas
+        Labia m = "Hola chamita";
+        [qlq] a = [coba, elda, elda];
+        bs @z;
+        Bus chacaito {
+            bsf pasaje = 10.2 ;
+            labia canto = "Pasaje al entrar";
+        }
     }
-}
+```
 
 Metro
 -------------
