@@ -177,16 +177,16 @@ Compuestos:
 - Apuntadores `@`: Apuntador a memoria del heap.
 -------------
 ```
-    {
-        Beticas
-        Labia m = "Hola chamita";
-        [qlq] a = [coba, elda, elda];
-        bs @z;
-        Bus chacaito {
-            bsf pasaje = 10.2 ;
-            labia canto = "Pasaje al entrar";
-        }
+{
+    Beticas
+    Labia m = "Hola chamita";
+    [qlq] a = [coba, elda, elda];
+    bs @z;
+    Bus chacaito {
+        bsf pasaje = 10.2 ;
+        labia canto = "Pasaje al entrar";
     }
+}
 ```
 
 Metro
@@ -197,14 +197,15 @@ Los `Metro` pueden definirse posicionando cada elemento o solo pasando un númer
 - `sitio(<Metro>, <expresión>)`: Retorna el índice de la primera ocurrencia en el arreglo del valor resultante de evaluar la expresión.
 - `voltea(<Metro>)`: Invierte el orden del arreglo. 
 -------------
-    ```
-    { Beticas
+```
+{ 
+    Beticas
     Metro<bs[5]> a = [1,2,3,4,5];
     Metro<letra[5]> b
     tam(a);
     sitio(2,a)
-    }
-    ```
+}
+```
 
 Metrobus
 -------------
@@ -216,12 +217,13 @@ Los `Metrobus` pueden definirse por extensión o solo pasando un número entero 
 - `saca(<Metrobus>)`: Saca el último elemento del arreglo.  
 - `voltea(<Metrobus>)`: Invierte el orden del arreglo. 
 -------------
-    ```
-    { Beticas
+```
+{ 
+    Beticas
     Metrobus<bs[5]> a = [1,2,3,4,5];
     Metrobus<letra[5]> b
-    }
-    ```
+}
+```
 
 Mecanismos de selección
 =======================
