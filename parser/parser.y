@@ -67,14 +67,14 @@ S           : Start                                                         {cou
             |                                                               {cout << "\n";}
             ;
 
-Start       : OBLOCK BETICAS Sec CBLOCK Start                               {cout << "OBLOCK BETICAS Sec CBLOCK SEMICOLON Start\n";}
+Start       : Start SEMICOLON OBLOCK BETICAS Sec CBLOCK                     {cout << "Start SEMICOLON OBLOCK BETICAS Sec CBLOCK \n";}
             | OBLOCK BETICAS Sec CBLOCK                                     {cout << "OBLOCK BETICAS Sec CBLOCK\n";}
-            | OBLOCK Sec CBLOCK Start                                       {cout << "OBLOCK Sec CBLOCK SEMICOLON Start\n";}
+            | Start SEMICOLON OBLOCK Sec CBLOCK                             {cout << "Start SEMICOLON OBLOCK Sec CBLOCK \n";}
             | OBLOCK Sec CBLOCK                                             {cout << "OBLOCK Sec CBLOCK\n";}
             ;
 
-Sec 		: Inst SEMICOLON Sec  					                        {cout << "Inst SEMICOLON Sec  \n";}
-			| Inst SEMICOLON							                    {cout << "Inst SEMICOLON\n";}
+Sec 		: Sec SEMICOLON Inst   					                        {cout << "Sec SEMICOLON Inst \n";}
+			| Inst							                                {cout << "Inst \n";}
 			;
 
 Inst        : Id ASIGN Exp                                                  {cout << "Ids ASIGN Exp\n";}
@@ -98,15 +98,15 @@ Typedef     : QLQ                                                           {cou
             | BSF                                                           {cout << "BSF \n";}
             | LETRA                                                         {cout << "LETRA \n";}
             | LABIA                                                         {cout << "LCHAR \n";}
-            | OBRACKET Typedef CBRACKET                                     {cout << "OBRACKET Typedef CBRACKET \n";}
+            | Typedef OBRACKET Typedef CBRACKET                             {cout << "OBRACKET Typedef CBRACKET \n";}
             | BUS                                                           {cout << "BUS \n";}
             | BULULU                                                        {cout << "BULULU \n";}
             ;
 
 Vardec      : Typedef Id                                                    {cout << "Typedef Ids \n";}
             | Typedef Pointer                                               {cout << "Typedef Pointer \n";}
-            | Typedef Id COMMA Vardec                                       {cout << "Typedef Ids Vardec \n";}
-            | Typedef Pointer COMMA Vardec                                  {cout << "Typedef Pointer Vardec \n";}
+            | Vardec COMMA Typedef Id                                       {cout << "Typedef COMMA Ids Vardec \n";}
+            | Vardec COMMA Typedef Pointer                                  {cout << "Typedef COMMA Pointer Vardec \n";}
             ;
 
 Exp         : OPAR Exp CPAR                                                 {cout << "OPAR PLUS CPAR \n";}
@@ -142,7 +142,7 @@ Exp         : OPAR Exp CPAR                                                 {cou
             | Literals                                                      {cout << "Literals \n";}
             ;
 
-List        : Exp COMMA List                                                {cout << "Exp COMMA List \n";}
+List        : List COMMA Exp                                                {cout << "List COMMA Exp \n";}
             | Exp                                                           {cout << "Exp \n";}
             ;
 
@@ -175,7 +175,7 @@ Seleccion   : PORSIA OPAR Exp CPAR Start                                    {cou
             | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {cout << "TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK \n";}
             ;
 
-Casos       : CASO OPAR Exp CPAR Start Casos                                {cout << "CASO OPAR Exp CPAR Start Casos \n";}
+Casos       : Casos CASO OPAR Exp CPAR Start                                {cout << "Casos CASO OPAR Exp CPAR Start \n";}
             | CASO OPAR Exp CPAR Start                                      {cout << "CASO OPAR Exp CPAR Start \n";}
             ;
 
