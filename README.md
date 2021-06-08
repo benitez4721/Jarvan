@@ -180,7 +180,7 @@ Compuestos:
 {
     Beticas
     Labia m = "Hola chamita";
-    [qlq] a = [coba, elda, elda];
+    Metro<qlq[3]> a = [coba, elda, elda];
     bs @z;
     Bus chacaito {
         bsf pasaje = 10.2 ;
