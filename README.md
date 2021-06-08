@@ -34,6 +34,18 @@ En Jarvan, un identificador se utiliza para nombrar variables y funciones, puede
 
 # Instrucciones
 
+## Declaración de variables
+
+Para la declaración de variables en Jarvan, se usa la palabra reservada `Beticas`. Esto abrirá un nuevo bloque de instrucciones para la declaración de variables que culmina con la útlima declaración sin el operador de secuenciación `;`.
+```
+{
+    Beticas
+    bs n = 1;
+    letra m = 'm';
+    bsf d = 0.1
+}
+```
+
 ## Secuenciación
 ```
 {
@@ -118,17 +130,7 @@ de acceder a la variable exterior.
 # Conversiones de tipo.
 
 `devalua(<bs>)`: Esta función convierte una variable de tipo `bs` en una de tipo `bsf`.  
-`efectivo(<bsf>)`: Esta función convierte una variable de tipo `bsf` en una de tipo `bs`, o una variable de tipo `letra` o `labia` en una de tipo `bs`, siempre y cuando tengan caracteres únicamente numéricos.   
- 
-# Funciones sobre arreglos.
-
-Sobre una variable de tipo `Arreglo`,  están definidas las siguientes funciones embebidas:
-
-`tam(<Arreglo>)`: Retorna la longitud de un arreglo.  
-`sitio(<Arreglo>, <expresión>)`: Retorna el índice de la primera ocurrencia en el arreglo del valor resultante de evaluar la expresión.  
-`metele(<Arreglo>, <expresión>`: Agrega un elemento al arreglo.  
-`sacale(<Arreglo>)`: Saca el último elemento del arreglo.  
-`voltea(<Arreglo>)`: Invierte el orden del arreglo.  
+`efectivo(<bsf>)`: Esta función convierte una variable de tipo `bsf` en una de tipo `bs`, o una variable de tipo `letra` o `Labia` en una de tipo `bs`, siempre y cuando tengan caracteres únicamente numéricos.   
 
 # Comentarios.
 
@@ -145,39 +147,78 @@ Los comentarios pueden ser de una línea o más de una línea. En caso de una l�
 Tipos
 =======================
 
-Jarvan cuenta con tipos escalares y tipos compuestos. Toda variable puede ser declarada siempre que no haya sido declarada anteriormente dentro del mismo alcance. Todo tipo debe ser declarado en letra minúscula. Esto se logra de esta forma <tipo> <NombreVariable>.
+Jarvan cuenta con tipos escalares y tipos compuestos. Toda variable puede ser declarada siempre que no haya sido declarada anteriormente dentro del mismo alcance. Todo tipo esacalar debe ser declarado en letra minúscula, mientras que los tipos compuestos deben ser declarados con inicial mayúscula. Esto se logra de esta forma <tipo> <NombreVariable>.
 
 Escalares
 -------------
 - `qlq`: Puede optar por dos valores: `elda` o `coba`, representando el 0 y el 1, respectivamente. `qlq` tiene por default el valor `coba`.
-- `bs`: Número entero.
-- `bsf`: Número punto flotante con precisión simple.
+- `bs`: Número entero de 4 bytes (32 bits), complemento a 2.
+- `bsf`: Número punto flotante con precisión sencilla, según norma estándar IEEE 754.
 - `letra`: Caracter ASCII. El valor debe de declararse dentro de comillas simples `''`.
+- `nulo`: Tipo de valor único `nada`.
 -------------
     ```
     { Beticas
-    qlq a = mono;
+    qlq a = elda;
     letra l = 'A';
     bs e = 1;
-    bsf f = ;
+    bsf f = 1.2;
     }
     ```
 
 Compuestos:
 -------------
-- `labia`: Cadena de caracteres.
-- Arreglos `[<tipo>]`: Arreglo de tamaño fijo.
-- `bus`: Registro. Tipo de estructura que puede contener elementos de diferentes tipos.
-- `bululu`: Registros variantes.
+- `Labia`: Cadena de caracteres.
+-  `Metro<tipo[<tamaño>]>`: Arreglo de tamaño constante.
+-  `Metrobus<tipo[tamaño]>`: Listas, arreglos de tamaño dinámico.
+- `Bus`: Registro. Tipo de estructura que puede contener elementos de diferentes tipos.
+- `Bululu`: Registros variantes.
 - Apuntadores `@`: Apuntador a memoria del heap.
 -------------
-    labia m = "Hola chamita";
-    [qlq] a = [mono, ardilla, ardilla];
+{
+    Beticas
+    Labia m = "Hola chamita";
+    [qlq] a = [coba, elda, elda];
     bs @z;
-    bus chacaito {
+    Bus chacaito {
         bsf pasaje = 10.2 ;
         labia canto = "Pasaje al entrar";
     }
+}
+
+Metro
+-------------
+Los `Metro` pueden definirse posicionando cada elemento o solo pasando un número entero que define el tamaño del `Metro`. En caso de no definir cada posición del `Metro`, se llenará con valores de tipo `nulo`. Se pueden usar ciertas funciones sobre el tipo `Metro`, estas son:
+
+- `tam(<Metro>)`: Retorna la longitud de un arreglo.  
+- `sitio(<Metro>, <expresión>)`: Retorna el índice de la primera ocurrencia en el arreglo del valor resultante de evaluar la expresión.
+- `voltea(<Metro>)`: Invierte el orden del arreglo. 
+-------------
+    ```
+    { Beticas
+    Metro<bs[5]> a = [1,2,3,4,5];
+    Metro<letra[5]> b
+    tam(a);
+    sitio(2,a)
+    }
+    ```
+
+Metrobus
+-------------
+Los `Metrobus` pueden definirse por extensión o solo pasando un número entero que define el tamaño del `Metrobus`. Es análogo al `Metro`, con la diferencia de que su tamaño puede variar gracias a las funciones de `mete()` y `saca()`. Se pueden usar estas funciones sobre los tipo `Metrobus`:
+
+- `tam(<Metrobus>)`: Retorna la longitud de un arreglo.  
+- `sitio(<Metrobus>, <expresión>)`: Retorna el índice de la primera ocurrencia en el arreglo del valor resultante de evaluar la expresión.
+- `mete(<Metrobus>, <expresión>)`: Agrega un elemento al arreglo.  
+- `saca(<Metrobus>)`: Saca el último elemento del arreglo.  
+- `voltea(<Metrobus>)`: Invierte el orden del arreglo. 
+-------------
+    ```
+    { Beticas
+    Metrobus<bs[5]> a = [1,2,3,4,5];
+    Metrobus<letra[5]> b
+    }
+    ```
 
 Mecanismos de selección
 =======================
@@ -300,14 +341,19 @@ En jarvan las funciones solo pueden retornar escalares, además las funciones pu
 La declaración de una función consiste en la palabra reservada `Chamba`. seguido  de:
             
 - Nombre de la función.
+- Tipo de valor a retornar. En caso de referirnos a un procedimiento (función sin valor de retorno) se puede ignorar esta parte.
 - Lista de parámetros, encerrados entre paréntesis y separados por coma.
 - El cuerpo de la función encerrado entre llaves `{...}`
 
-Por ejemplo el siguiente código define una función llamada `mychamba`:
+Por ejemplo el siguiente código define una función llamada `mychamba` y un procedimeinto llamado `saimeLannister`:
             
  ```
- Chamba mychamba(bs a){
+ Chamba bs mychamba(bs a){
             rescata a * a
+ }
+
+ Chamba nulo saimeLannister(letra a) {
+     a = a + 'chambeando'
  }
  ```
 La palabra reservada `rescata` especifica el valor retornado por la función. Para llamar a esta función la sintaxis es la siguiente: `mychamba(5)`
@@ -331,7 +377,7 @@ Para pasar una variable como parametro a una función por referencia, basta pasa
 
  ```
  Chamba mychamba(bs @a){
-            rescata @a * @a
+            rescata a * a
  }
  ```
             
