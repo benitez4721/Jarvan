@@ -1,2 +1,4 @@
 *.exe
 *.yy.c
+*.tab.*
+*.output
