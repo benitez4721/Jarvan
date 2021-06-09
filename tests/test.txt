@@ -1,5 +1,5 @@
     Chamba factorial(bs n){
-           if(n == 0){
+           if(n = 0){
                rescata 1
            }&&
            rescata n * factorial(n-1)

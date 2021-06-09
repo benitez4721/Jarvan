@@ -4,7 +4,7 @@
 #include<string.h>
 #include<fstream>
 #include<algorithm>
-#include "lexer/lexer.h"
+#include "lexer.h"
 using namespace std;
 
 extern FILE* yyin;
