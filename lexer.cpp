@@ -151,5 +151,7 @@ void Lexer::init_tokens_definitions(){
     nTokens[STRING] = "TkString";
     nTokens[CHAR] = "TkChar";
     nTokens[WS] = "ws";
+    nTokens[DEVALUA] = "TkDevalua";
+    nTokens[EFECTIVO] = "TkEfectivo";
 
 }

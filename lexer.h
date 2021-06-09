@@ -77,6 +77,8 @@ using namespace std;
 #define STRING 70
 #define CHAR 71
 #define WS 72
+#define DEVALUA 73
+#define EFECTIVO 74
 
 
 
