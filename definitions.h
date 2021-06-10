@@ -76,7 +76,10 @@ using namespace std;
 #define CHAR 71
 #define WS 72
 #define DEVALUA 73
-#define EFECTIVO 7
+#define EFECTIVO 74
+#define NULO 75
+#define METRO 76
+#define METROBUS 77
 
 extern string nTokens[]; 
 void init_tokens_definitions();

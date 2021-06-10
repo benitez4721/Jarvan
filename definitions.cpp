@@ -41,6 +41,7 @@ void init_tokens_definitions(){
     nTokens[LABIA] = "TkLabia";
     nTokens[BS] = "TkBs";
     nTokens[BSF] = "TkBsf";
+    nTokens[NULO] = "TkNulo";
     nTokens[ERROR] = "TkError";
     nTokens[BETICAS] = "TkBeticas";
     nTokens[OBLOCK] = "TkOblock";
@@ -50,6 +51,8 @@ void init_tokens_definitions(){
     nTokens[BUS] = "TkBus";
     nTokens[BULULU] = "TkBululu";
     nTokens[POINTER] = "TkPointer";
+    nTokens[METRO] = "TkMetro";
+    nTokens[METROBUS] = "TkMetrobus";
     nTokens[LEER] = "TkLeer";
     nTokens[IMPRIMIR] = "TkImprimir";
     nTokens[SEMICOLON] = "TkSemicolon";
