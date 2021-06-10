@@ -1,15 +1,25 @@
 %error-verbose
 %{
-    #include <iostream>
+    #include<iostream>
+    #include<stdlib.h>
+    #include<string.h>
+    #include <vector>
+    #include "parser.tab.h"
+    #include "definitions.h"
 
     using namespace std;
+
+    vector<Token> tokens;
+    vector<Token> errors;
 
     #define YYDEBUG 1
 
     extern int yylex();
-    extern int yycolumn;
     extern int yylineno;
-    extern char * yytext;
+    extern int yyleng;
+    extern int yycolumn;
+    extern FILE* yyin;
+    extern char* yytext;
 
     bool error_sintactico = 0;
 
@@ -64,7 +74,7 @@
 %%
 
 Start       :  OBLOCK Cuerpo CBLOCK                                         {cout << "Start      \n";}
-            |  OBLOCK CBLOCK                                                {cout << "\n";}
+            |  OBLOCK CBLOCK                                                {cout << "Block \n";}
             ;
 
 Cuerpo      : BETICAS Declaration_List                                      {cout << "Cuerpo \n";}
@@ -92,4 +102,75 @@ Id                  : ID                                                    {;}
 
 void yyerror (char const *s) {
     fprintf (stderr, "%s\n", s);
+}
+
+void run_lexer(){
+    cout << "executing lexer" << endl;
+    int ntoken;
+    ntoken = yylex();
+    int column = 1;
+    int row = yylineno;
+    bool isComment = false;
+    
+    while(ntoken) {
+        if(row != yylineno){
+            row = yylineno;
+            column = 1;
+            yycolumn = 2;
+            isComment = false;
+        }
+        else{
+            column = yycolumn - yyleng;  
+        }
+        if(nTokens[ntoken] != "ws" && !isComment){
+
+            if(ntoken == ERROR){
+                errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
+            }
+            else{
+                tokens.push_back(Token(yytext, nTokens[ntoken], yylineno, column ));
+            }
+        }
+
+        if(ntoken == HASH){
+            isComment = true;
+        }
+        
+
+
+        ntoken = yylex();
+
+    }
+    if(errors.size() > 0){
+        for(int i = 0; i < errors.size(); i++){
+            cout << errors[i].to_str();
+        }
+    }else {
+        for(int i = 0; i < tokens.size(); i++){
+            cout << tokens[i].to_str();
+        }
+    }
+}
+
+void run_parser(){
+	cout << "Ejecutando parser" << endl;
+    
+    try {
+		yyparse();
+	}
+	catch(const char* const errorMessage){
+		cout << "Error: " << endl;
+			cout << errorMessage << endl;
+	}
+	
+	cout << "Parseado" << endl;
+	// Si hay errores del lexer, imprimirlos
+}
+
+int main(int argc, char *argv[]){
+    init_tokens_definitions();
+    string filePath = argv[1];
+    yyin = fopen(argv[1], "r");
+    run_parser();
+    return 0;
 }

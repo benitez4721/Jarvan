@@ -1,8 +1,8 @@
-default: scanner.o definitions.o 
+default:
+	bison -d parser.y && \
 	flex lexer.l && \
 	g++ -c definitions.cpp && \
-	g++ -c scanner.cpp definitions.cpp && \
-	g++ scanner.o definitions.o lex.yy.c -o jarvan
+	g++ -g definitions.o lex.yy.c parser.tab.c -o jarvan
 
-
-
+clean:
+	rm lex.yy.c parser.tab.* scanner.o definitions.o jarvan.exe
