@@ -2,7 +2,7 @@
 
 #include<stdlib.h>
 #include<iostream>
-#include "parser.tab.h"
+#include "definitions.h"
 using namespace std;
 
 

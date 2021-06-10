@@ -1,10 +1,8 @@
-
 #include<stdlib.h>
 #include<string>
 #include<vector>
 
 using namespace std;
-
 #define BETICAS 1
 #define OBLOCK 2
 #define CBLOCK 3
@@ -78,9 +76,10 @@ using namespace std;
 #define CHAR 71
 #define WS 72
 #define DEVALUA 73
-#define EFECTIVO 74
+#define EFECTIVO 7
 
-
+extern string nTokens[]; 
+void init_tokens_definitions();
 
 class Token {
     public:
@@ -90,13 +89,4 @@ class Token {
         int column;
         Token(string _token, string _type, int _row, int _column);
         string to_str();
-};
-
-class Lexer {
-    public:
-        vector<Token> tokens;   
-        vector<Token> errors;
-        void run();
-        void createToken(string lexema, int fila, int columna);
-        void init_tokens_definitions();
 };

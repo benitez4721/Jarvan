@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<iostream>
 #include<string>
-#include "lexer.h"
+#include "definitions.h"
 #include <map>
 #include <regex>
 using namespace std;
@@ -36,51 +36,7 @@ string Token::to_str(){
     }
 }
 
-extern int yylex();
-extern int yylineno;
-extern int yyleng;
-extern int yycolumn;
-extern char* yytext;
-
-void Lexer::run(){
-    int ntoken;
-    ntoken = yylex();
-    int column = 1;
-    int row = yylineno;
-    bool isComment = false;
-    
-    while(ntoken) {
-        if(row != yylineno){
-            row = yylineno;
-            column = 1;
-            yycolumn = 2;
-            isComment = false;
-        }
-        else{
-            column = yycolumn - yyleng;  
-        }
-        if(nTokens[ntoken] != "ws" && !isComment){
-
-            if(ntoken == ERROR){
-                errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
-            }
-            else{
-                tokens.push_back(Token(yytext, nTokens[ntoken], yylineno, column ));
-            }
-        }
-
-        if(ntoken == HASH){
-            isComment = true;
-        }
-        
-
-
-        ntoken = yylex();
-
-    }
-}
-
-void Lexer::init_tokens_definitions(){
+void init_tokens_definitions(){
     nTokens[ID] = "TkId";
     nTokens[LABIA] = "TkLabia";
     nTokens[BS] = "TkBs";
