@@ -1,0 +1,31 @@
+{
+    Chamba fibonacci(){
+       Beticas
+       bs n 
+       imprimir("Ingrese numero de terminos");
+       leer(n);
+
+       porsia(n <= 0){
+           imprimir("Debe ingresar un numero mayor a 0")
+       };
+       nimodo{
+           imprimir(0);
+           porsia(n>=2){
+               Beticas
+               int anterior = 0;
+               int actual = 1;
+               int i = 2
+
+               pegao(i<=n){
+                   Beticas
+                   int copia_actual = actual
+
+                   actual += anterior;
+                   anterior = copia_actual;
+                   imprimir(actual);
+                   i += 1
+               }
+           }
+       }
+    }
+}

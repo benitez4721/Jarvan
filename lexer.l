@@ -2,7 +2,7 @@
 
 #include<stdlib.h>
 #include<iostream>
-#include "lexer.h"
+#include "parser.tab.h"
 using namespace std;
 
 
