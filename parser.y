@@ -36,7 +36,7 @@
 
 
 %locations
-%start Start
+%start S
 
 %left AND OR
 %left LEQ GEQ LESS GREATER
@@ -77,20 +77,21 @@ Start               :  OBLOCK Body CBLOCK                                       
                     ;
 
 Body                : BETICAS DeclarationList                                      {;}
+                    | Function
                     ;
 
 // Variables Declaration
 
-DeclarationList     : Declaration                                                                           {;}
-                    | DeclarationList SEMICOLON Declaration                {;} 
+DeclarationList     : DeclarationList SEMICOLON Declaration                                                                         {;}
+                    | Declaration                                                   {;} 
                     ;
 
 Declaration         : Type IdList Init                                           {;}
                     | BUS IdList OBLOCK DeclarationList CBLOCK                                               {;}
                     ;
 
-IdList              : ID                                                    {;}
-                    | IdList COMMA ID                                       {;}
+IdList              : IdList COMMA ID                                                   {;}
+                    | ID                                                            {;}
                     ;
 
 Type                : BS                                                    {;}
@@ -132,6 +133,76 @@ LiteralList         : Literal
 
 Array               : OBRACKET LiteralList CBRACKET
                     | OBRACKET CBRACKET
+
+// Expresiones
+
+Exp         : OPAR Exp CPAR                                                 {;}
+
+            | Exp PLUS Exp                                                  {;}
+            | Exp MINUS Exp                                                 {;}
+            | Exp MULT Exp                                                  {;}
+            | Exp DIV Exp                                                   {;}
+            | Exp POTEN Exp                                                 {;}
+            | Exp INTDIV Exp                                                {;}
+            | Exp REST Exp                                                  {;}
+
+            | Exp AND Exp                                                   {;}
+            | Exp OR Exp                                                    {;}
+            | NOT Exp                                                       {;}
+
+            | Exp EQUAL Exp                                                 {;}
+            | Exp NEQUAL Exp                                                {;}
+            | Exp GEQ Exp                                                   {;}
+            | Exp LEQ Exp                                                   {;}
+            | Exp GREATER Exp                                               {;}
+            | Exp LESS Exp                                                  {;}
+
+            | Exp PLUSASIGN Exp                                             {;}
+            | Exp MINUSASIGN Exp                                            {;}
+            | Exp MULTASIGN Exp                                             {;}
+            | Exp DIVASIGN Exp                                              {;}
+            | Exp POTENASIGN Exp                                            {;}
+            | Exp INTDIVASIGN Exp                                           {;}
+            | Exp RESTASIGN Exp                                             {;}        
+            | ArrOp                                                           {;}
+            | Conversion                                                    {;}
+            | Literal                                                       {;}
+            | ID                                                       {;}
+            ;
+
+ArrOp       : TAM OPAR Array CPAR                                            {;}
+            | SITIO OPAR Array CPAR                                          {;}
+            | METELE OPAR Array CPAR                                         {;}
+            | SACALE OPAR Array CPAR                                         {;}
+            | VOLTEA OPAR Array CPAR                                         {;}
+            | TAM OPAR ID CPAR                                            {;}
+            | SITIO OPAR ID CPAR                                          {;}
+            | METELE OPAR ID CPAR                                         {;}
+            | SACALE OPAR ID CPAR                                         {;}
+            | VOLTEA OPAR ID CPAR                                         {;}
+            ;
+
+Conversion  : EFECTIVO OPAR Literal OPAR                                   {;}
+            | DEVALUA OPAR Literal OPAR                                    {;}
+            ;
+
+// Esto esta desde el parser viejo falta quitarle el Start y una vez tengamos lo que dijo Marco lo cambiamos
+
+// Seleccion   : PORSIA OPAR Exp CPAR Start                                    {;}
+//             | SINO OPAR Exp CPAR Start                                      {;}
+//             | NIMODO Start                                                  {;}
+//             | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {;}
+//             ;
+
+// Casos       : Casos CASO OPAR Exp CPAR Start                                {;}
+//             | CASO OPAR Exp CPAR Start                                      {;}
+//             ;
+
+// Repeticion  : VACILA OPAR Vardec SEMICOLON Exp SEMICOLON Exp CPAR Start     {;}
+//             | VACILA OPAR Id IN Exp CPAR Start                              {;}  
+//             | PEGAO OPAR Exp CPAR Start                                     {;} 
+//             ;
+
 %%
 
 void yyerror (char const *s) {
