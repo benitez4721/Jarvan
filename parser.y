@@ -72,7 +72,7 @@
 
 %%
 
-Start               :  OBLOCK Body CBLOCK                                         {;}
+Start               :  OBLOCK Body CBLOCK                                           {;}
                     |  OBLOCK CBLOCK                                                {;}
                     ;
 
@@ -81,7 +81,7 @@ Body                : BETICAS DeclarationList                                   
 
 // Variables Declaration
 
-DeclarationList     : Declaration                                           {;}
+DeclarationList     : Declaration                                                                           {;}
                     | DeclarationList SEMICOLON Declaration                {;} 
                     ;
 
