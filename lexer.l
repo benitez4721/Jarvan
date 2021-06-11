@@ -24,8 +24,7 @@ char                    (\".{1}\")
 {string}                {return STRING;}
 {int}                   {return INT;}
 {float}                 {return FLOAT;}
-[\t\n]                  ; 
-" "                     {return WS;}
+[ \t\n]                  ; 
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}
 "devalua"               {return DEVALUA;}
@@ -35,9 +34,11 @@ char                    (\".{1}\")
 "{"                     {return OBLOCK;}
 "}"                     {return CBLOCK;}
 "qlq"                   {return QLQ;}
-"labia"                 {return LABIA;}
-"bus"                   {return BUS;}
-"bululu"                {return BULULU;}
+"Labia"                 {return LABIA;}
+"Bus"                   {return BUS;}
+"Bululu"                {return BULULU;}
+"Metro"                 {return METRO;}
+"Metrobus"              {return METROBUS;}
 "@"                     {return POINTER;}
 "leer"                  {return LEER;}
 "imprimir"              {return IMPRIMIR;}

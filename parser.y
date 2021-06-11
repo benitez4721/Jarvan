@@ -49,7 +49,7 @@
 %token LETRA 5 
 %token BETICAS 6 
 %token OBLOCK 7 CBLOCK 8 
-%token LABIA 9 QLQ 10 BUS 11 BULULU 12 POINTER 13 
+%token LABIA 9 QLQ 10 BUS 11 BULULU 12 POINTER 13
 %token LEER 14 IMPRIMIR 15
 %token PLUSASIGN 16 MINUSASIGN 17 MULTASIGN 18 POTENASIGN 19 DIVASIGN 20 RESTASIGN 21 INTDIVASIGN 22 
 %token SEMICOLON 23 ASIGN 24
@@ -68,40 +68,75 @@
 %token <ch> CHAR 69
 %token <num> INT 70
 %token <flot> FLOAT 71
-%token WS 72
-
+%token METRO 72 METROBUS 73
 
 %%
 
-Start       :  OBLOCK Cuerpo CBLOCK                                         {cout << "Start      \n";}
-            |  OBLOCK CBLOCK                                                {cout << "Block \n";}
-            ;
-
-Cuerpo      : BETICAS Declaration_List                                      {cout << "Cuerpo \n";}
-            ;
-
-Declaration_List    : Declaration                                           {cout << "Declaration \n"}
-                    | Declaration_List SEMICOLON Declaration                {cout << "DeclarationList \n"} 
+Start               :  OBLOCK Body CBLOCK                                         {;}
+                    |  OBLOCK CBLOCK                                                {;}
                     ;
 
-Declaration         : Type Id                                               {cout << "ID" ;}
+Body                : BETICAS DeclarationList                                      {;}
+                    ;
+
+// Variables Declaration
+
+DeclarationList     : Declaration                                           {;}
+                    | DeclarationList SEMICOLON Declaration                {;} 
+                    ;
+
+Declaration         : Type IdList Init                                           {;}
+                    | BUS IdList OBLOCK DeclarationList CBLOCK                                               {;}
+                    ;
+
+IdList              : ID                                                    {;}
+                    | IdList COMMA ID                                       {;}
                     ;
 
 Type                : BS                                                    {;}
                     | BSF                                                   {;}
                     | LABIA                                                 {;}
                     | LETRA                                                 {;}
-                    | BUS                                                   {;}
                     | BULULU                                                {;}
+                    | QLQ                                                   {;}
+                    | ArrayType LESS Type OBRACKET ArrayInitSize CBRACKET GREATER         {;}
                     ;
 
-Id                  : ID                                                    {;}
+ArrayType           : METRO                                                 {;}
+                    | METROBUS                                              {;}
                     ;
 
+ArrayInitSize       : INT                                                   {;}
+                    | 
+                    ;
+
+// Variables initialization
+
+Init                : ASIGN Literal
+                    | ASIGN Array
+                    |
+                    ;
+
+// Literals
+
+Literal             : INT
+                    | FLOAT
+                    | CHAR
+                    | STRING
+                    | ELDA
+                    | COBA
+                    ;
+
+LiteralList         : Literal
+                    | LiteralList COMMA Literal
+
+Array               : OBRACKET LiteralList CBRACKET
+                    | OBRACKET CBRACKET
 %%
 
 void yyerror (char const *s) {
-    fprintf (stderr, "%s\n", s);
+    cout << s << " line: " << yylineno << endl;
+    // fprintf (stderr, "%s%s\n", s);
 }
 
 void run_lexer(){
