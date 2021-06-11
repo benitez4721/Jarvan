@@ -155,7 +155,6 @@ Escalares
 - `bs`: Número entero de 4 bytes (32 bits), complemento a 2.
 - `bsf`: Número punto flotante con precisión sencilla, según norma estándar IEEE 754.
 - `letra`: Caracter ASCII. El valor debe de declararse dentro de comillas simples `''`.
-- `nulo`: Tipo de valor único `nada`.
 -------------
 ```
     {
@@ -346,7 +345,7 @@ En jarvan las funciones solo pueden retornar escalares, además las funciones pu
 La declaración de una función consiste en la palabra reservada `Chamba`. seguido  de:
             
 - Nombre de la función.
-- Tipo de valor a retornar. En caso de referirnos a un procedimiento (función sin valor de retorno) se puede ignorar esta parte.
+- Tipo de valor a retornar. En caso de referirnos a un procedimiento (función sin valor de retorno) se usa la palabra reservada `nada`, que denota la no existencia de valor de retorno.
 - Lista de parámetros, encerrados entre paréntesis y separados por coma.
 - El cuerpo de la función encerrado entre llaves `{...}`
 
