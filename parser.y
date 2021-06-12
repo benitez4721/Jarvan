@@ -4,6 +4,7 @@
     #include<stdlib.h>
     #include<string.h>
     #include <vector>
+    #include "ast.h"
     #include "parser.tab.h"
     #include "definitions.h"
 
@@ -23,6 +24,8 @@
 
     bool error_sintactico = 0;
 
+    Program * root_ast;
+
     void yyerror(const char *s);
 %}
 
@@ -32,11 +35,13 @@
     char * str;
     char ch;
     float flot;
+    Body * body;
+    Node * node;
 }
 
 
 %locations
-%start Start
+%start Program
 
 %left AND OR
 %left LEQ GEQ LESS GREATER
@@ -69,28 +74,25 @@
 %token <num> INT 70
 %token <flot> FLOAT 71
 %token METRO 72 METROBUS 73
+%type <node> Body DeclarationList Declaration
 
 %%
 
-Start               :  OBLOCK Body CBLOCK                                           {;}
+Program             :  OBLOCK Body CBLOCK                                           {root_ast = new Program($2);}
                     |  OBLOCK CBLOCK                                                {;}
                     ;
 
-Body                : BETICAS DeclarationList                                      {;}
+Body                : BETICAS DeclarationList                                      {$$= new Body($2);}
                     ;
 
 // Variables Declaration
 
-DeclarationList     : Declaration                                                                           {;}
+DeclarationList     : Declaration                                          {$$ = new DeclarationList();}
                     | DeclarationList SEMICOLON Declaration                {;} 
                     ;
 
-Declaration         : Type IdList Init                                           {;}
-                    | BUS IdList OBLOCK DeclarationList CBLOCK                                               {;}
-                    ;
-
-IdList              : ID                                                    {;}
-                    | IdList COMMA ID                                       {;}
+Declaration         : Type ID Init                                           {;}
+                    | BUS ID OBLOCK DeclarationList CBLOCK                                               {;}
                     ;
 
 Type                : BS                                                    {;}
@@ -188,7 +190,7 @@ void run_lexer(){
 }
 
 void run_parser(){
-	cout << "Ejecutando parser" << endl;
+	cout << "Ejecutando parser" << endl << endl;
     
     try {
 		yyparse();
@@ -198,7 +200,7 @@ void run_parser(){
 			cout << errorMessage << endl;
 	}
 	
-	cout << "Parseado" << endl;
+    cout << root_ast->to_s() << endl;
 	// Si hay errores del lexer, imprimirlos
 }
 
