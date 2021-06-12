@@ -87,12 +87,12 @@ Body                : BETICAS DeclarationList                                   
 
 // Variables Declaration
 
-DeclarationList     : Declaration                                          {$$ = new DeclarationList();}
-                    | DeclarationList SEMICOLON Declaration                {;} 
+DeclarationList     : Declaration                                          {$$ = new DeclarationList(NULL, $1);}
+                    | DeclarationList SEMICOLON Declaration                {$$ = new DeclarationList($1, $3);} 
                     ;
 
-Declaration         : Type ID Init                                           {;}
-                    | BUS ID OBLOCK DeclarationList CBLOCK                                               {;}
+Declaration         : Type ID Init                                           {$$ = new Declaration();}
+                    | BUS ID OBLOCK DeclarationList CBLOCK                   {$$ = new Declaration();}
                     ;
 
 Type                : BS                                                    {;}

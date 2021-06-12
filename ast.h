@@ -7,26 +7,29 @@ string getTab(int tab);
 
 class Node {
     public:
-        virtual string to_s(int tab) { };
+        virtual string to_s(int tab, int tabAux = 0) { };
 };
 
-class Declaration {
+class Declaration : public Node {
+    public:
+        string to_s(int tab, int tabAux = 0);
+        
 
 };
 
 class DeclarationList : public Node{
     public:
         Node * l_declaration;
-        Declaration * declaration;
-        // DeclarationList(DeclarationList * l_declaration);
-        string to_s(int tab);
+        Node * declaration;
+        DeclarationList(Node * l_declaration, Node * declaration);
+        string to_s(int tab, int tabAux = 0);
 };
 
 class Body : public Node{
     public:
         Node * l_declaration;
         Body(Node * l_declaration);
-        string to_s(int tab);
+        string to_s(int tab, int tabAux = 0);
 };
 
 class Program : public Node{
