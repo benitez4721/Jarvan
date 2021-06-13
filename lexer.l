@@ -86,8 +86,6 @@ string                   (\".*\")
 "Chamba"                {return CHAMBA;}
 "rescata"               {return RESCATA;}
 "."                     {return POINT;}
-"'"                     {return COMILLA;}
-"\""                    {return COMILLAD;}
 {id}                    {return ID;}
 .                       {return ERROR;}
 %%

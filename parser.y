@@ -71,8 +71,6 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%token COMILLA 76
-%token COMILLAD 77
 
 %%
 
