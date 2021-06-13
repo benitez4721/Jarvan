@@ -48,9 +48,11 @@ string DeclarationList::to_s(int tab, int tabAux) {
     return s;
 };
 
-
+Declaration::Declaration(string _id){
+   id = _id;
+}
 string Declaration::to_s(int tab, int tabAux){
-    return getTab(tab) + "Declaration\n";
+    return getTab(tab) + "ident: " + id + "\n";
 }
 
 

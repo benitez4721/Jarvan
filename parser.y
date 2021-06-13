@@ -35,7 +35,6 @@
     char * str;
     char ch;
     float flot;
-    Body * body;
     Node * node;
 }
 
@@ -68,7 +67,8 @@
 %token PORSIA 54 SINO 55 NIMODO 56 TANTEA 57 CASO 58
 %token VACILA 59 IN 60 ACHANTA 61 SIGUELA 62
 %token PEGAO 63 CHAMBA 64 RESCATA 65 
-%token ID 66 ERROR 67
+%token ERROR 67
+%token <str> ID 66
 %token <str> STRING 68
 %token <ch> CHAR 69
 %token <num> INT 70
@@ -91,8 +91,8 @@ DeclarationList     : Declaration                                          {$$ =
                     | DeclarationList SEMICOLON Declaration                {$$ = new DeclarationList($1, $3);} 
                     ;
 
-Declaration         : Type ID Init                                           {$$ = new Declaration();}
-                    | BUS ID OBLOCK DeclarationList CBLOCK                   {$$ = new Declaration();}
+Declaration         : Type ID Init                                           {$$ = new Declaration($2);}
+                    | BUS ID OBLOCK DeclarationList CBLOCK                   {$$ = new Declaration($2);}
                     ;
 
 Type                : BS                                                    {;}

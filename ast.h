@@ -12,6 +12,8 @@ class Node {
 
 class Declaration : public Node {
     public:
+        string id;
+        Declaration(string id);
         string to_s(int tab, int tabAux = 0);
         
 
