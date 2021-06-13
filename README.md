@@ -224,6 +224,25 @@ Los `Metrobus` pueden definirse por extensión o solo pasando un número entero 
 }
 ```
 
+Bus 
+-------------
+En Jarvan, se pueden declarar registros (estructura de dato que se conforma de la unión de varios elementos) mediante el uso la palabra reservada `Bus`. Para hacer referencia a los campos del registro se usa `.`
+
+-------------
+```
+{ 
+    Beticas
+    Bus chacaito {
+        bsf pasaje = 10.2 ;
+        labia canto = "Pasaje al entrar"
+    }
+
+    chacaito.pasaje = 5;
+    chacaito.canto = "Pasaje al salir"
+
+}
+```
+
 Mecanismos de selección
 =======================
 

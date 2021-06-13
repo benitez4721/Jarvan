@@ -92,6 +92,7 @@ char                    (\".{1}\")
 "pegao"                 {return PEGAO;}
 "Chamba"                {return CHAMBA;}
 "rescata"               {return RESCATA;}
+"."                     {return POINT;}
 {id}                    {return ID;}
 .                       {return ERROR;}
 %%
