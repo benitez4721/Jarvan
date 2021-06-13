@@ -40,6 +40,7 @@
 
 %left AND OR
 %left LEQ GEQ LESS GREATER
+%left EQUAL NQUAL
 %left PLUS MINUS
 %left POTEN MULT DIV INTDIV REST
 %right NOT
@@ -51,7 +52,6 @@
 %token OBLOCK 7 CBLOCK 8 
 %token LABIA 9 QLQ 10 BUS 11 BULULU 12 POINTER 13
 %token LEER 14 IMPRIMIR 15
-%token PLUSASIGN 16 MINUSASIGN 17 MULTASIGN 18 POTENASIGN 19 DIVASIGN 20 RESTASIGN 21 INTDIVASIGN 22 
 %token SEMICOLON 23 ASIGN 24
 %token PLUS 25 MINUS 26 MULT 27 POTEN 28 DIV 29 INTDIV 30 REST 31
 %token LEQ 32 GEQ 33 LESS 34 GREATER 35 EQUAL 36 NQUAL 37 AND 38 OR 39 NOT 40
@@ -71,6 +71,8 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
+%token COMILLA 76
+%token COMILLAD 77
 
 %%
 
@@ -78,73 +80,44 @@ Start               :  OBLOCK Body CBLOCK                                       
                     |  OBLOCK CBLOCK                                                {;}
                     ;
 
-Body                : BETICAS DeclarationList Inst                                    {;}
+// aqui va Inst despues de DeclarationList
+Body                : BETICAS Declaration Inst                                    {;}
                     | Inst                                                            {;}
-                    ;
-
-InstList            : InstList SEMICOLON Inst                                          {;}
-                    | Inst                                                             {;}
-
-Inst                : Conversion                                                        {;}
-                    | Seleccion                                                         {;}
-                    | Casos                                                             {;}
-                    | Repeticion                                                        {;}
-                    | FuncDef                                                           {;}
-                    | FuncCall                                                          {;}
-                    | Asignacion                                                        {;}
-                    | ArrOp                                                             {;}
-                    |
                     ;
 
 // Variables Declaration
 
-DeclarationList     : DeclarationList SEMICOLON Declaration                                                                         {;}
-                    | Declaration                                                   {;} 
+Declaration 	    : Declaration SEMICOLON TypeId					{;}
+			        | Declaration SEMICOLON TypeId ASIGN Exp  			{;}
+			        | TypeId SEMICOLON 							{;}
+			        | TypeId ASIGN Exp SEMICOLON 					{;}
+			        ;
+
+Asignacion :        Id ASIGN Exp                       {;}
                     ;
 
-Declaration         : Type IdList Init                                           {;}
-                    | BUS ID OBLOCK DeclarationList CBLOCK                                               {;}
-                    | BULULU ID OBLOCK DeclarationList CBLOCK
+TypeId              : Type ID                                           {;}
                     ;
 
-IdList              : IdList COMMA ID                                                   {;}
-                    | ID                                                                {;}
+Id           		: Id POINT ID										{;}
+			        | ID Corchetes 								{;}
+			        | ID 										{;}
+			        ;
+
+Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		{;}
+                    | OBRACKET Exp CBRACKET 					{;}
                     ;
 
 Type                : BS                                                    {;}
                     | BSF                                                   {;}
                     | LABIA                                                 {;}
-                    | LETRA                                                 {;}
-                    | BULULU                                                {;}
+                    | LETRA                                                 {;}                                                {;}
                     | QLQ                                                   {;}
-                    | ArrayType LESS Type OBRACKET INT CBRACKET GREATER    {;}
+                    | ArrayType LESS Type Corchetes GREATER    {;}
                     ;
 
 ArrayType           : METRO                                                 {;}
                     | METROBUS                                              {;}
-                    ;
-
-// Variables initialization
-
-Asignacion          : LValue ASIGN RValue                                   {;}
-                    ;
-
-LValue              : ID                                                    {;}
-                    | ID OBRACKET INT CBRACKET                              {;}
-                    | RegRef                                                {;}
-                    ;
-
-RegRef              : RegRef POINT ID                                       {;}
-                    | ID                                                    {;}
-                    ;
-
-RValue              : Exp                                                   {;}
-                    | RegRef                                                {;}
-                    | FuncCall                                              {;}
-                    ;
-
-Init                : ASIGN Literal                                         {;}
-                    | ASIGN Array                                           {;}     
                     ;
 
 // Literals
@@ -155,17 +128,16 @@ Literal             : INT                                                   {;}
                     | STRING                                                {;}                                             
                     | ELDA                                                  {;}
                     | COBA                                                  {;}
+                    | Array                         {;}
+                    | Id
                     ;
 
-LiteralList         : Literal                                               {;}                                               
-                    | LiteralList COMMA Literal                             {;}                                             
+Array               : OBRACKET List CBRACKET                            {;}
                     ;
 
-Array               : OBRACKET LiteralList CBRACKET                         {;}                                             
-                    | OBRACKET CBRACKET                                     {;}                                             
+List                : Exp                                               {;}                                               
+                    | List COMMA Exp                             {;}                                             
                     ;
-
-// Expresiones
 
 Exp         : OPAR Exp CPAR                                                 {;}
 
@@ -187,19 +159,39 @@ Exp         : OPAR Exp CPAR                                                 {;}
             | Exp LEQ Exp                                                   {;}
             | Exp GREATER Exp                                               {;}
             | Exp LESS Exp                                                  {;}
-
-            | Exp PLUSASIGN Exp                                             {;}
-            | Exp MINUSASIGN Exp                                            {;}
-            | Exp MULTASIGN Exp                                             {;}
-            | Exp DIVASIGN Exp                                              {;}
-            | Exp POTENASIGN Exp                                            {;}
-            | Exp INTDIVASIGN Exp                                           {;}
-            | Exp RESTASIGN Exp                                             {;}        
+        
             | ArrOp                                                         {;}
             | Conversion                                                    {;}
-            | Literal                                                       {;}
-            | ID                                                            {;}
+            | Literal                                                       {;}                                                           {;}
             | FuncCall                                                      {;}
+            ;
+
+Inst                : Conversion                                                        {;}
+                    | Seleccion                                                         {;}
+                    | Repeticion                                                        {;}
+                    | FuncDef                                                           {;}
+                    | FuncCall                                                          {;}
+                    | Asignacion                                                        {;}
+                    | ArrOp                                                             {;}
+                    ;
+
+Conversion  : EFECTIVO OPAR Literal OPAR                                   {;}
+            | DEVALUA OPAR Literal OPAR                                    {;}
+            ;
+
+Seleccion   : PORSIA OPAR Exp CPAR Start                                    {;}
+            | SINO OPAR Exp CPAR Start                                      {;}
+            | NIMODO Start                                                  {;}
+            | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {;}
+            ;
+
+Casos       : Casos CASO OPAR Exp CPAR Start                                {;}
+            | CASO OPAR Exp CPAR Start                                      {;}
+            ;
+
+Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Start     {;}
+            | VACILA OPAR Id IN Exp CPAR Start                              {;}  
+            | PEGAO OPAR Exp CPAR Start                                     {;} 
             ;
 
 ArrOp       : TAM OPAR Array CPAR                                            {;}
@@ -214,11 +206,7 @@ ArrOp       : TAM OPAR Array CPAR                                            {;}
             | VOLTEA OPAR ID CPAR                                            {;}
             ;
 
-Conversion  : EFECTIVO OPAR Literal OPAR                                   {;}
-            | DEVALUA OPAR Literal OPAR                                    {;}
-            ;
-
-// Sobre las funciones
+// // Sobre las funciones
 
 FuncCall    : ID OPAR CPAR                                                  {;}
             | ID OPAR Exp CPAR                                              {;}
@@ -226,23 +214,6 @@ FuncCall    : ID OPAR CPAR                                                  {;}
 
 FuncDef     : CHAMBA Type ID OPAR Type ID CPAR Start                        {;}
             | CHAMBA NADA ID OPAR Type ID CPAR Start                        {;}
-            ;
-
-// Esto esta desde el parser viejo falta quitarle el Start y una vez tengamos lo que dijo Marco lo cambiamos
-
-Seleccion   : PORSIA OPAR Exp CPAR Start                                    {;}
-            | SINO OPAR Exp CPAR Start                                      {;}
-            | NIMODO Start                                                  {;}
-            | TANTEA OPAR ID CPAR OBLOCK Casos CBLOCK                       {;}
-            ;
-
-Casos       : Casos CASO OPAR Exp CPAR Start                                {;}
-            | CASO OPAR Exp CPAR Start                                      {;}
-            ;
-
-Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Start     {;}
-            | VACILA OPAR ID IN Exp CPAR Start                              {;}  
-            | PEGAO OPAR Exp CPAR Start                                     {;} 
             ;
 
 %%
