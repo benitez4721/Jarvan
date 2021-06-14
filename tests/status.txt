@@ -1,0 +1,7 @@
+Test:
+    Block:
+        {}: OK
+        Declaraciones
+            Literales: OK
+            
+Test: Ok

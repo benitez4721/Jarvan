@@ -41,7 +41,7 @@ void init_tokens_definitions(){
     nTokens[LABIA] = "TkLabia";
     nTokens[BS] = "TkBs";
     nTokens[BSF] = "TkBsf";
-    nTokens[NULO] = "TkNulo";
+    nTokens[NADA] = "TkNada";
     nTokens[ERROR] = "TkError";
     nTokens[BETICAS] = "TkBeticas";
     nTokens[OBLOCK] = "TkOblock";
@@ -112,5 +112,6 @@ void init_tokens_definitions(){
     nTokens[WS] = "ws";
     nTokens[DEVALUA] = "TkDevalua";
     nTokens[EFECTIVO] = "TkEfectivo";
+    nTokens[POINT] = "TkPoint";
 
 }

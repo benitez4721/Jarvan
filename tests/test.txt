@@ -4,21 +4,9 @@
     bsf b;
     bs c;
     letra l;
-    Labia j;
-    Metro<qlq[3]> a;
-    Metrobus<bs[]> b;
-    Bululu j;
+    Labia j
+    
 
-    qlq a = elda;
-    bsf b = 1.5;
-    bs c = 6;
-    letra l = "i";
-    Labia j = "Hola";
-    Metro<qlq[3]> a = [1,2,3];
-    Metrobus<bs[]> b = [1,2,3];
-    Bus c {
-        qlq a;
-        qlq b
-    }
+    
 
 }

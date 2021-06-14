@@ -155,7 +155,6 @@ Escalares
 - `bs`: Número entero de 4 bytes (32 bits), complemento a 2.
 - `bsf`: Número punto flotante con precisión sencilla, según norma estándar IEEE 754.
 - `letra`: Caracter ASCII. El valor debe de declararse dentro de comillas simples `''`.
-- `nulo`: Tipo de valor único `nada`.
 -------------
 ```
     {
@@ -222,6 +221,25 @@ Los `Metrobus` pueden definirse por extensión o solo pasando un número entero 
     Beticas
     Metrobus<bs[5]> a = [1,2,3,4,5];
     Metrobus<letra[5]> b
+}
+```
+
+Bus 
+-------------
+En Jarvan, se pueden declarar registros (estructura de dato que se conforma de la unión de varios elementos) mediante el uso la palabra reservada `Bus`. Para hacer referencia a los campos del registro se usa `.`
+
+-------------
+```
+{ 
+    Beticas
+    Bus chacaito {
+        bsf pasaje = 10.2 ;
+        labia canto = "Pasaje al entrar"
+    }
+
+    chacaito.pasaje = 5;
+    chacaito.canto = "Pasaje al salir"
+
 }
 ```
 
@@ -346,7 +364,7 @@ En jarvan las funciones solo pueden retornar escalares, además las funciones pu
 La declaración de una función consiste en la palabra reservada `Chamba`. seguido  de:
             
 - Nombre de la función.
-- Tipo de valor a retornar. En caso de referirnos a un procedimiento (función sin valor de retorno) se puede ignorar esta parte.
+- Tipo de valor a retornar. En caso de referirnos a un procedimiento (función sin valor de retorno) se usa la palabra reservada `nada`, que denota la no existencia de valor de retorno.
 - Lista de parámetros, encerrados entre paréntesis y separados por coma.
 - El cuerpo de la función encerrado entre llaves `{...}`
 

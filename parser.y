@@ -36,14 +36,16 @@
     char ch;
     float flot;
     Node * node;
+    Program * program;
 }
 
 
 %locations
-%start Program
+%start Start
 
 %left AND OR
 %left LEQ GEQ LESS GREATER
+%left EQUAL NQUAL
 %left PLUS MINUS
 %left POTEN MULT DIV INTDIV REST
 %right NOT
@@ -55,7 +57,6 @@
 %token OBLOCK 7 CBLOCK 8 
 %token LABIA 9 QLQ 10 BUS 11 BULULU 12 POINTER 13
 %token LEER 14 IMPRIMIR 15
-%token PLUSASIGN 16 MINUSASIGN 17 MULTASIGN 18 POTENASIGN 19 DIVASIGN 20 RESTASIGN 21 INTDIVASIGN 22 
 %token SEMICOLON 23 ASIGN 24
 %token PLUS 25 MINUS 26 MULT 27 POTEN 28 DIV 29 INTDIV 30 REST 31
 %token LEQ 32 GEQ 33 LESS 34 GREATER 35 EQUAL 36 NQUAL 37 AND 38 OR 39 NOT 40
@@ -74,66 +75,170 @@
 %token <num> INT 70
 %token <flot> FLOAT 71
 %token METRO 72 METROBUS 73
+%token NADA 74
+%token POINT 75
 %type <node> Body DeclarationList Declaration
+%type <program> Program 
 
 %%
+Start               : Program                                                       {root_ast = $1;}
+                    | 
+                    ;
 
-Program             :  OBLOCK Body CBLOCK                                           {root_ast = new Program($2);}
+Program             :  OBLOCK Body CBLOCK                                           {$$ = new Program($2);}
                     |  OBLOCK CBLOCK                                                {;}
                     ;
 
-Body                : BETICAS DeclarationList                                      {$$= new Body($2);}
+Body                : BETICAS DeclarationList InstList                                    {$$= new Body($2);}
+                    | BETICAS DeclarationList                                             {cout << "BETICAS DeclarationList \n";}
+                    | InstList                                                            {cout << "InstList \n";}
+                    ;
                     ;
 
 // Variables Declaration
 
-DeclarationList     : Declaration                                          {$$ = new DeclarationList(NULL, $1);}
-                    | DeclarationList SEMICOLON Declaration                {$$ = new DeclarationList($1, $3);} 
+DeclarationList     : DeclarationList SEMICOLON Declaration                         {$$ = new DeclarationList($1, $3);}
+                    | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
                     ;
 
-Declaration         : Type ID Init                                           {$$ = new Declaration($2);}
-                    | BUS ID OBLOCK DeclarationList CBLOCK                   {$$ = new Declaration($2);}
+Declaration         : Type Asignacion                                               {cout << "Type Asignacion \n";}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {cout << "BUS Id OBLOCK DeclarationList CBLOCK \n";}
+                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {cout << "BULULU Id OBLOCK DeclarationList CBLOCK \n";}
+                    | Type Id                                                       {cout << "Type Id \n";}
                     ;
 
-Type                : BS                                                    {;}
-                    | BSF                                                   {;}
-                    | LABIA                                                 {;}
-                    | LETRA                                                 {;}
-                    | BULULU                                                {;}
-                    | QLQ                                                   {;}
-                    | ArrayType LESS Type OBRACKET ArrayInitSize CBRACKET GREATER         {;}
+Asignacion          : Id ASIGN Exp                                      {cout << "Id ASIGN Exp \n";}
                     ;
 
-ArrayType           : METRO                                                 {;}
-                    | METROBUS                                              {;}
+Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
+			        | ID Corchetes 								        {cout << "ID Corchetes \n";}
+			        | ID 										        {cout << "ID \n";}
+			        ;
+
+Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
+                    | OBRACKET Exp CBRACKET                         {cout << "OBRACKET Exp CBRACKET \n";}
+                    | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
                     ;
 
-ArrayInitSize       : INT                                                   {;}
-                    | 
+Type                : BS                                                    {cout << "BS \n";}
+                    | BSF                                                   {cout << "BSF \n";}
+                    | LABIA                                                 {cout << "LABIA \n";}
+                    | LETRA                                                 {cout << "LETRA \n";}                                                {;}
+                    | QLQ                                                   {cout << "QLQ \n";}
+                    | ArrayType LESS Type Corchetes GREATER                 {cout << "ArrayType LESS Type Corchetes GREATER \n";}
                     ;
 
-// Variables initialization
-
-Init                : ASIGN Literal
-                    | ASIGN Array
-                    |
+ArrayType           : METRO                                                 {cout << "METRO \n";}
+                    | METROBUS                                              {cout << "METROBUS \n";}
                     ;
 
 // Literals
 
-Literal             : INT
-                    | FLOAT
-                    | CHAR
-                    | STRING
-                    | ELDA
-                    | COBA
+Literal             : INT                                                   {cout << "INT \n";}                                                   
+                    | FLOAT                                                 {cout << "FLOAT \n";}
+                    | CHAR                                                  {cout << "CHAR \n";}
+                    | STRING                                                {cout << "STRING \n";}                                             
+                    | ELDA                                                  {cout << "ELDA \n";}
+                    | COBA                                                  {cout << "COBA \n";}
+                    | Array                                                 {cout << "Array \n";}
+                    | Id                                                    {cout << "Id \n";}
                     ;
 
-LiteralList         : Literal
-                    | LiteralList COMMA Literal
+Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}
+                    ;
 
-Array               : OBRACKET LiteralList CBRACKET
-                    | OBRACKET CBRACKET
+List                : Exp                                               {cout << "Exp \n";}                                               
+                    | List COMMA Exp                                    {cout << "List COMMA Exp \n";}                                             
+                    ;
+
+Exp         : OPAR Exp CPAR                                                 {cout << "OPAR Exp CPAR \n";}
+
+            | Exp PLUS Exp                                                  {cout << "Exp PLUS Exp \n";}
+            | Exp MINUS Exp                                                 {cout << "Exp MINUS Exp \n";}
+            | Exp MULT Exp                                                  {cout << "Exp MULT Exp \n";}
+            | Exp DIV Exp                                                   {cout << "Exp DIV Exp \n";}
+            | Exp POTEN Exp                                                 {cout << "Exp POTEN Exp \n";}
+            | Exp INTDIV Exp                                                {cout << "Exp INTDIV Exp \n";}
+            | Exp REST Exp                                                  {cout << "Exp REST Exp \n";}
+
+            | Exp AND Exp                                                   {cout << "Exp AND Exp \n";}
+            | Exp OR Exp                                                    {cout << "Exp OR Exp \n";}
+            | NOT Exp                                                       {cout << "NOT Exp \n";}
+
+            | Exp EQUAL Exp                                                 {cout << "Exp EQUAL Exp \n";}
+            | Exp NQUAL Exp                                                 {cout << "Exp NQUAL Exp \n";}
+            | Exp GEQ Exp                                                   {cout << "Exp GEQ Exp \n";}
+            | Exp LEQ Exp                                                   {cout << "Exp LEQ Exp \n";}
+            | Exp GREATER Exp                                               {cout << "Exp GREATER Exp \n";}
+            | Exp LESS Exp                                                  {cout << "Exp LESS Exp \n";}
+        
+            | ArrOp                                                         {cout << "ArrOp \n";}
+            | Conversion                                                    {cout << "Conversion \n";}
+            | Literal                                                       {cout << "Literal \n";}                                                          
+            | FuncCall                                                      {cout << "FuncCall \n";}
+            | POINTER ID                                                    {cout << "POINTER ID \n";}
+            ;
+
+InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
+            | Inst                                                          {cout << "Inst \n";}
+
+Inst        : Conversion                                                        {cout << "Conversion \n";}
+            | Seleccion                                                         {cout << "Seleccion \n";}
+            | Repeticion                                                        {cout << "Repeticion \n";}
+            | FuncDef                                                           {cout << "FuncDef \n";}
+            | FuncCall                                                          {cout << "FuncCall \n";}
+            | Asignacion                                                        {cout << "Asignacion \n";}
+            | ArrOp                                                             {cout << "ArrOp \n";}
+            | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
+            | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}
+            ;
+
+Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout << "EFECTIVO OPAR Literal OPAR \n";}
+            | DEVALUA OPAR Literal OPAR                                    {cout << "DEVALUA OPAR Literal OPAR \n";}
+            ;
+
+Seleccion   : PORSIA OPAR Exp CPAR Program                                    {cout << "PORSIA OPAR Exp OPAR Start \n";}
+            | SINO OPAR Exp CPAR Program                                      {cout << "SINO OPAR Exp CPAR Start \n";}
+            | NIMODO Program                                                  {cout << "NIMODO Start \n";}
+            | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {cout << "TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK \n";}
+            ;
+
+Casos       : Casos CASO OPAR Exp CPAR Program                                {cout << "Casos CASO OPAR Exp CPAR Start \n";}
+            | CASO OPAR Exp CPAR Program                                      {cout << "CASO OPAR Exp CPAR Start \n";}
+            ;
+
+Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {cout << "VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Start \n";}
+            | VACILA OPAR Id IN Exp CPAR Program                                   {cout << "VACILA OPAR Id IN Exp CPAR Start \n";}  
+            | PEGAO OPAR Exp CPAR Program                                          {cout << "PEGAO OPAR Exp CPAR Start \n";} 
+            ;
+
+ArrOp       : TAM OPAR Array CPAR                                            {cout << "TAM OPAR Array CPAR \n";}
+            | SITIO OPAR Array CPAR                                          {cout << "SITIO OPAR Array CPAR \n";}
+            | METELE OPAR Array CPAR                                         {cout << "METELE OPAR Array CPAR \n";}
+            | SACALE OPAR Array CPAR                                         {cout << "SACALE OPAR Array CPAR \n";}
+            | VOLTEA OPAR Array CPAR                                         {cout << "VOLTEA OPAR Array CPAR \n";}
+            | TAM OPAR ID CPAR                                               {cout << "TAM OPAR ID CPAR \n";}
+            | SITIO OPAR ID CPAR                                             {cout << "SITIO OPAR ID CPAR \n";}
+            | METELE OPAR ID CPAR                                            {cout << "METELE OPAR ID CPAR \n";}
+            | SACALE OPAR ID CPAR                                            {cout << "SACALE OPAR ID CPAR \n";}
+            | VOLTEA OPAR ID CPAR                                            {cout << "VOLTEA OPAR ID CPAR \n";}
+            ;
+
+// // Sobre las funciones
+
+FuncCall    : ID OPAR CPAR                                                  {cout << "ID OPAR CPAR \n";}
+            | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
+            ;
+
+FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
+            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+            ;
+
+ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
+            | Declaration                                                   {cout << "Declaration \n";}
+            |                                                               {cout << "Empty Param \n";}
+            ;
+
 %%
 
 void yyerror (char const *s) {
@@ -211,3 +316,4 @@ int main(int argc, char *argv[]){
     run_parser();
     return 0;
 }
+

@@ -18,9 +18,9 @@ int yycolumn = 1;
 
 int                      ([0-9]+)
 float                     ([0-9]+.[0-9]+)
-id                      ([a-zA-Z_][a-zA-Z0-9_]*)
+char                    '(.|\\n|\\t)'
+id                      [a-zA-Z][a-zA-Z0-9_]*
 string                   (\".*\")
-char                    (\".{1}\")
 %option yylineno
 
 %%
@@ -34,6 +34,7 @@ char                    (\".{1}\")
 "devalua"               {return DEVALUA;}
 "efectivo"              {return EFECTIVO;}
 "letra"                 {return LETRA;}
+"nada"                  {return NADA;}
 "Beticas"               {return BETICAS;}
 "{"                     {return OBLOCK;}
 "}"                     {return CBLOCK;}
@@ -43,16 +44,9 @@ char                    (\".{1}\")
 "Bululu"                {return BULULU;}
 "Metro"                 {return METRO;}
 "Metrobus"              {return METROBUS;}
-"@"                     {return POINTER;}
+"~"                     {return POINTER;}
 "leer"                  {return LEER;}
 "imprimir"              {return IMPRIMIR;}
-"+="                    {return PLUSASIGN;}
-"-="                    {return MINUSASIGN;}
-"*="                    {return MULTASIGN;}
-"^="                    {return POTENASIGN;}
-"/="                    {return DIVASIGN;}
-"%="                    {return RESTASIGN;}
-"//="                   {return INTDIVASIGN;}
 ";"                     {return SEMICOLON;}
 "="                     {return ASIGN;}
 "+"                     {return PLUS;}
@@ -70,7 +64,7 @@ char                    (\".{1}\")
 "!="                    {return NQUAL;}
 "&&"                    {return AND;}
 "||"                    {return OR;}
-"!"                     {return NOT;}
+"not"                     {return NOT;}
 "("                     {return OPAR;}
 ")"                     {return CPAR;}
 "["                     {return OBRACKET;}
@@ -96,6 +90,7 @@ char                    (\".{1}\")
 "pegao"                 {return PEGAO;}
 "Chamba"                {return CHAMBA;}
 "rescata"               {return RESCATA;}
+"."                     {return POINT;}
 {id}                    {return ID;}
 .                       {return ERROR;}
 %%
