@@ -1,0 +1,11 @@
+{
+   Beticas
+   bsf n = 1;
+   bsf n = 0.1;
+   letra a = 'a';
+   bsf d = 0.1; 
+   qlq a = elda;
+   qlq a = coba;
+   Metro<bs[1]> a = [1,2,3];
+   Metrobus<bs[1]> a = [1,2,3]  
+}
