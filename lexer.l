@@ -30,6 +30,7 @@ string                   (\".*\")
 "devalua"               {return DEVALUA;}
 "efectivo"              {return EFECTIVO;}
 "letra"                 {return LETRA;}
+"nada"                  {return NADA;}
 "Beticas"               {return BETICAS;}
 "{"                     {return OBLOCK;}
 "}"                     {return CBLOCK;}

@@ -7,7 +7,6 @@
     Labia j;
     Metro<qlq[3]> a;
     Metrobus<bs[]> b;
-    Bululu j;
 
     qlq a = elda;
     bsf b = 1.5;

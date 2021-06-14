@@ -79,22 +79,25 @@ Start               :  OBLOCK Body CBLOCK                                       
                     ;
 
 // aqui va Inst despues de DeclarationList
-Body                : BETICAS DeclarationList Inst                                    {;}
-                    | Inst                                                            {;}
-                    | BETICAS DeclarationList                                         {;}
+
+Body                : BETICAS DeclarationList InstList                                    {cout << "BETICAS DeclarationList InstList \n";}
+                    | BETICAS DeclarationList                                             {cout << "BETICAS DeclarationList \n";}
+                    | InstList                                                            {cout << "InstList \n";}
                     ;
 
 // Variables Declaration
 
-DeclarationList     : DeclarationList SEMICOLON Declaration                                                                         {;}
-                    | Declaration                                                   {;} 
+DeclarationList     : Declaration SEMICOLON DeclarationList                         {cout << "DeclarationList SEMICOLON Declaration \n";}                                                 {;}
+                    | Declaration                                                   {cout << "Declaration \n";} 
                     ;
 
-Declaration         : Type Asignacion                                           {;}
-                    | BUS Id OBLOCK DeclarationList CBLOCK                                               {;}
+Declaration         : Type Asignacion                                               {cout << "Type Asignacion \n";}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {cout << "BUS Id OBLOCK DeclarationList CBLOCK \n";}
+                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {cout << "BULULU Id OBLOCK DeclarationList CBLOCK \n";}
+                    | Type Id                                                       {cout << "Type Id \n";}
                     ;
 
-Asignacion :        Id ASIGN Exp                       {;}
+Asignacion          : Id ASIGN Exp                                      {cout << "Id ASIGN Exp \n";}
                     ;
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
@@ -104,6 +107,7 @@ Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
 
 Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
                     | OBRACKET Exp CBRACKET                         {cout << "OBRACKET Exp CBRACKET \n";}
+                    | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
                     ;
 
 Type                : BS                                                    {cout << "BS \n";}
@@ -164,14 +168,19 @@ Exp         : OPAR Exp CPAR                                                 {cou
             | FuncCall                                                      {cout << "FuncCall \n";}
             ;
 
-Inst                : Conversion                                                        {cout << "Conversion \n";}
-                    | Seleccion                                                         {cout << "Seleccion \n";}
-                    | Repeticion                                                        {cout << "Repeticion \n";}
-                    | FuncDef                                                           {cout << "FuncDef \n";}
-                    | FuncCall                                                          {cout << "FuncCall \n";}
-                    | Asignacion                                                        {cout << "Asignacion \n";}
-                    | ArrOp                                                             {cout << "ArrOp \n";}
-                    ;
+InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
+            | Inst                                                          {cout << "Inst \n";}
+
+Inst        : Conversion                                                        {cout << "Conversion \n";}
+            | Seleccion                                                         {cout << "Seleccion \n";}
+            | Repeticion                                                        {cout << "Repeticion \n";}
+            | FuncDef                                                           {cout << "FuncDef \n";}
+            | FuncCall                                                          {cout << "FuncCall \n";}
+            | Asignacion                                                        {cout << "Asignacion \n";}
+            | ArrOp                                                             {cout << "ArrOp \n";}
+            | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
+            | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}
+            ;
 
 Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout << "EFECTIVO OPAR Literal OPAR \n";}
             | DEVALUA OPAR Literal OPAR                                    {cout << "DEVALUA OPAR Literal OPAR \n";}
@@ -210,8 +219,13 @@ FuncCall    : ID OPAR CPAR                                                  {cou
             | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
             ;
 
-FuncDef     : CHAMBA Type ID OPAR Type ID CPAR Start                        {cout << "CHAMBA Type ID OPAR Type ID CPAR Start \n";}
-            | CHAMBA NADA ID OPAR Type ID CPAR Start                        {cout << "CHAMBA NADA OPAR Type ID CPAR Start \n";}
+FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Start                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
+            | CHAMBA NADA ID OPAR ParamList CPAR Start                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+            ;
+
+ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
+            | Declaration                                                   {cout << "Declaration \n";}
+            |                                                               {cout << "Empty Param \n";}
             ;
 
 %%

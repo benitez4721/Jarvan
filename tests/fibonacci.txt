@@ -1,5 +1,5 @@
 {
-    Chamba fibonacci(){
+    Chamba nada fibonacci(){
        Beticas
        bs n 
        imprimir("Ingrese numero de terminos");
@@ -12,18 +12,18 @@
            imprimir(0);
            porsia(n>=2){
                Beticas
-               int anterior = 0;
-               int actual = 1;
-               int i = 2
+               bs anterior = 0;
+               bs actual = 1;
+               bs i = 2
 
                pegao(i<=n){
                    Beticas
-                   int copia_actual = actual
+                   bs copia_actual = actual
 
-                   actual += anterior;
+                   actual = actual + anterior;
                    anterior = copia_actual;
                    imprimir(actual);
-                   i += 1
+                   i = i + 1
                }
            }
        }
