@@ -74,24 +74,25 @@
 
 %%
 
-Start               :  OBLOCK Body CBLOCK                                           {;}
-                    |  OBLOCK CBLOCK                                                {;}
+Start               :  OBLOCK Body CBLOCK                                           {cout << "OBLOCK Body CBLOCK \n";}
+                    |  OBLOCK CBLOCK                                                {cout << "OBLOCK CBLOCK \n";}
                     ;
 
 // aqui va Inst despues de DeclarationList
-Body                : BETICAS Declaration Inst                                    {;}
-                    | Inst                                                            {;}
+
+Body                : BETICAS Declaration Inst                                    {cout << "BETICAS Declaration Inst \n";}
+                    | Inst                                                        {cout << "Inst \n";}
                     ;
 
 // Variables Declaration
 
-Declaration 	    : Declaration SEMICOLON TypeId					{;}
-			        | Declaration SEMICOLON TypeId ASIGN Exp  			{;}
-			        | TypeId SEMICOLON 							{;}
-			        | TypeId ASIGN Exp SEMICOLON 					{;}
+Declaration 	    : Declaration SEMICOLON TypeId					{cout << "Declaration SEMICOLON TypeId \n";}
+			        | Declaration SEMICOLON TypeId ASIGN Exp  			{cout << "Declaration SEMICOLON TypeId ASIGN Exp \n";}
+			        | TypeId SEMICOLON 							{cout << "TypeId SEMICOLON \n";}
+			        | TypeId ASIGN Exp SEMICOLON 					{cout << "TypeId ASIGN Exp SEMICOLON \n";}
 			        ;
 
-Asignacion :        Id ASIGN Exp                       {;}
+Asignacion          : Id ASIGN Exp                       {cout << "Id ASIGN Exp \n";}
                     ;
 
 TypeId              : Type ID                                           {;}
