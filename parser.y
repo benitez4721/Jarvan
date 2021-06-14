@@ -79,22 +79,22 @@ Start               :  OBLOCK Body CBLOCK                                       
                     ;
 
 // aqui va Inst despues de DeclarationList
-Body                : BETICAS Declaration Inst                                    {;}
+Body                : BETICAS DeclarationList Inst                                    {;}
                     | Inst                                                            {;}
+                    | BETICAS DeclarationList                                         {;}
                     ;
 
 // Variables Declaration
 
-Declaration 	    : Declaration SEMICOLON TypeId					{;}
-			        | Declaration SEMICOLON TypeId ASIGN Exp  			{;}
-			        | TypeId SEMICOLON 							{;}
-			        | TypeId ASIGN Exp SEMICOLON 					{;}
-			        ;
-
-Asignacion :        Id ASIGN Exp                       {;}
+DeclarationList     : DeclarationList SEMICOLON Declaration                                                                         {;}
+                    | Declaration                                                   {;} 
                     ;
 
-TypeId              : Type ID                                           {;}
+Declaration         : Type Asignacion                                           {;}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                                               {;}
+                    ;
+
+Asignacion :        Id ASIGN Exp                       {;}
                     ;
 
 Id           		: Id POINT ID										{;}
