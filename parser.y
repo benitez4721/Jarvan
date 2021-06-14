@@ -197,10 +197,13 @@ Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout
             | DEVALUA OPAR Literal OPAR                                    {cout << "DEVALUA OPAR Literal OPAR \n";}
             ;
 
-Seleccion   : PORSIA OPAR Exp CPAR Program                                    {cout << "PORSIA OPAR Exp OPAR Start \n";}
-            | SINO OPAR Exp CPAR Program                                      {cout << "SINO OPAR Exp CPAR Start \n";}
-            | NIMODO Program                                                  {cout << "NIMODO Start \n";}
+Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {cout << "PORSIA OPAR Exp OPAR Start \n";}
             | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {cout << "TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK \n";}
+            ;
+
+Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {cout << "SINO OPAR Exp CPAR Start \n";}
+            | NIMODO Program                                                  {cout << "NIMODO Start \n";}
+            |                                                                 {cout << "FIN Seleccion2 \n";}
             ;
 
 Casos       : Casos CASO OPAR Exp CPAR Program                                {cout << "Casos CASO OPAR Exp CPAR Start \n";}
