@@ -40,7 +40,7 @@ string                   (\".*\")
 "Bululu"                {return BULULU;}
 "Metro"                 {return METRO;}
 "Metrobus"              {return METROBUS;}
-"@"                     {return POINTER;}
+"~"                     {return POINTER;}
 "leer"                  {return LEER;}
 "imprimir"              {return IMPRIMIR;}
 ";"                     {return SEMICOLON;}

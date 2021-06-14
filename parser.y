@@ -166,6 +166,7 @@ Exp         : OPAR Exp CPAR                                                 {cou
             | Conversion                                                    {cout << "Conversion \n";}
             | Literal                                                       {cout << "Literal \n";}                                                           {;}
             | FuncCall                                                      {cout << "FuncCall \n";}
+            | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;
 
 InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
