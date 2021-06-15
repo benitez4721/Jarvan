@@ -89,9 +89,9 @@ Program             :  OBLOCK Body CBLOCK                                       
                     |  OBLOCK CBLOCK                                                {;}
                     ;
 
-Body                : BETICAS DeclarationList InstList                                    {$$= new Body($2);}
-                    | BETICAS DeclarationList                                             {$$= new Body($2);}
-                    | InstList                                                            {cout << "InstList \n";}
+Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
+                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
+                    | InstList                                                            {$$ = new Body(NULL, $1);}
                     ;
                     ;
 

@@ -48,10 +48,27 @@ class DeclarationList : public Node{
         string to_s(int tab, int tabAux = 0);
 };
 
+class Inst : public Node {
+    public:
+        Node * node;
+        Node * l_instruction;
+        Inst(Node * node, Node * l_instruction);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class InstList : public Node{
+    public:
+        Node * l_instruction;
+        Node * instruction;
+        InstList(Node * l_instruction, Node * instruction);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class Body : public Node{
     public:
         Node * l_declaration;
-        Body(Node * l_declaration);
+        Node * l_instruction;
+        Body(Node * l_declaration, Node * l_instruction);
         string to_s(int tab, int tabAux = 0);
 };
 
