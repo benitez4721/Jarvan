@@ -77,7 +77,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst 
 %type <program> Program 
 
 %%
@@ -107,7 +107,7 @@ Declaration         : Type Asignacion                                           
                     | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1)}
+Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1, $3)}
                     ;
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
@@ -134,14 +134,12 @@ ArrayType           : METRO                                                 {cou
 
 // Literals
 
-Literal             : INT                                                   {;}                                                   
+Literal             : INT                                                   {$$ = new LiteralInt($1);}                                                   
                     | FLOAT                                                 {cout << "FLOAT \n";}
                     | CHAR                                                  {cout << "CHAR \n";}
                     | STRING                                                {cout << "STRING \n";}                                             
                     | ELDA                                                  {cout << "ELDA \n";}
                     | COBA                                                  {cout << "COBA \n";}
-                    | Array                                                 {cout << "Array \n";}
-                    | Id                                                    {cout << "Id \n";}
                     ;
 
 Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}
@@ -176,18 +174,20 @@ Exp         : OPAR Exp CPAR                                                 {cou
             | Conversion                                                    {cout << "Conversion \n";}
             | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {cout << "FuncCall \n";}
+            | Id                                                    {cout << "Id \n";}
+            | Array                                                    {cout << "Id \n";}
             | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;
 
-InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
-            | Inst                                                          {cout << "Inst \n";}
+InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);}
+            | Inst                                                          {$$ = new InstList(NULL, $1);}
 
 Inst        : Conversion                                                        {cout << "Conversion \n";}
             | Seleccion                                                         {cout << "Seleccion \n";}
             | Repeticion                                                        {cout << "Repeticion \n";}
             | FuncDef                                                           {cout << "FuncDef \n";}
             | FuncCall                                                          {cout << "FuncCall \n";}
-            | Asignacion                                                        {cout << "Asignacion \n";}
+            | Asignacion                                                        {$$ = $1;}
             | ArrOp                                                             {cout << "ArrOp \n";}
             | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
             | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}

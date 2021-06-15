@@ -10,16 +10,25 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
-// class Literal : public Node {
-//     public: 
-//         any value;
+class LiteralInt : public Node {
+    public: 
+        int value;
+        LiteralInt(int value);
+        string to_s(int tab, int tabAux = 0);
 
-// }
+};
+class Exp : public Node {
+    public:
+        Node *exp;
+        Exp(Node *exp);
+        string to_s(int tab, int tabAux = 0);
+};
 
 class Asign : public Node {
     public: 
         Node *id;
-        Asign(Node * id);
+        Node *exp;
+        Asign(Node * id, Node * exp);
         string to_s(int tab, int tabAux = 0);
 };
 
@@ -51,8 +60,7 @@ class DeclarationList : public Node{
 class Inst : public Node {
     public:
         Node * node;
-        Node * l_instruction;
-        Inst(Node * node, Node * l_instruction);
+        Inst(Node * node);
         string to_s(int tab, int tabAux = 0);
 };
 

@@ -4,9 +4,13 @@
     bsf b;
     bs c;
     letra l;
-    Labia j;
-    qlq a = elda;
-    bsf b = 1.5;
-    bs c = 6
+    Labia j
+
+    a = 8;
+    a = 25;
+    a = 56;
+    a = 98;
+    a = 76;
+    a = 23
 
 }

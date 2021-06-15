@@ -26,7 +26,7 @@ string                   (\".*\")
 %%
 {char}                  {return CHAR;}
 {string}                {return STRING;}
-{int}                   {return INT;}
+{int}                   {yylval.num = atoi(yytext);return INT;}
 {float}                 {return FLOAT;}
 [ \t\n]                  ; 
 "bs"                    {return BS;}
