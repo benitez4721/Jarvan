@@ -10,10 +10,31 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
-class Declaration : public Node {
+// class Literal : public Node {
+//     public: 
+//         any value;
+
+// }
+
+class Asign : public Node {
+    public: 
+        Node *id;
+        Asign(Node * id);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Id : public Node {
     public:
         string id;
-        Declaration(string id);
+        Id(string id);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Declaration : public Node {
+    public:
+        Node * node;
+        Node * l_declaration;
+        Declaration(Node * node, Node * l_declaration);
         string to_s(int tab, int tabAux = 0);
         
 
