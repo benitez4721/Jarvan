@@ -77,7 +77,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp
 %type <program> Program 
 
 %%
@@ -90,7 +90,7 @@ Program             :  OBLOCK Body CBLOCK                                       
                     ;
 
 Body                : BETICAS DeclarationList InstList                                    {$$= new Body($2);}
-                    | BETICAS DeclarationList                                             {cout << "BETICAS DeclarationList \n";}
+                    | BETICAS DeclarationList                                             {$$= new Body($2);}
                     | InstList                                                            {cout << "InstList \n";}
                     ;
                     ;
@@ -101,18 +101,18 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
                     ;
 
-Declaration         : Type Asignacion                                               {cout << "Type Asignacion \n";}
-                    | BUS Id OBLOCK DeclarationList CBLOCK                          {cout << "BUS Id OBLOCK DeclarationList CBLOCK \n";}
-                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {cout << "BULULU Id OBLOCK DeclarationList CBLOCK \n";}
-                    | Type Id                                                       {cout << "Type Id \n";}
+Declaration         : Type Asignacion                                               {$$ = new Declaration($2, NULL);}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
+                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
+                    | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {cout << "Id ASIGN Exp \n";}
+Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1)}
                     ;
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
 			        | ID Corchetes 								        {cout << "ID Corchetes \n";}
-			        | ID 										        {cout << "ID \n";}
+			        | ID 										        {$$ = new Id($1)}
 			        ;
 
 Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
@@ -120,12 +120,12 @@ Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchet
                     | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
                     ;
 
-Type                : BS                                                    {cout << "BS \n";}
-                    | BSF                                                   {cout << "BSF \n";}
-                    | LABIA                                                 {cout << "LABIA \n";}
-                    | LETRA                                                 {cout << "LETRA \n";}                                                {;}
-                    | QLQ                                                   {cout << "QLQ \n";}
-                    | ArrayType LESS Type Corchetes GREATER                 {cout << "ArrayType LESS Type Corchetes GREATER \n";}
+Type                : BS                                                    {;}
+                    | BSF                                                   {;}
+                    | LABIA                                                 {;}
+                    | LETRA                                                 {;}                                                
+                    | QLQ                                                   {;}
+                    | ArrayType LESS Type Corchetes GREATER                 {;}
                     ;
 
 ArrayType           : METRO                                                 {cout << "METRO \n";}
@@ -134,7 +134,7 @@ ArrayType           : METRO                                                 {cou
 
 // Literals
 
-Literal             : INT                                                   {cout << "INT \n";}                                                   
+Literal             : INT                                                   {;}                                                   
                     | FLOAT                                                 {cout << "FLOAT \n";}
                     | CHAR                                                  {cout << "CHAR \n";}
                     | STRING                                                {cout << "STRING \n";}                                             
@@ -174,7 +174,7 @@ Exp         : OPAR Exp CPAR                                                 {cou
         
             | ArrOp                                                         {cout << "ArrOp \n";}
             | Conversion                                                    {cout << "Conversion \n";}
-            | Literal                                                       {cout << "Literal \n";}                                                          
+            | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {cout << "FuncCall \n";}
             | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;

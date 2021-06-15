@@ -48,12 +48,31 @@ string DeclarationList::to_s(int tab, int tabAux) {
     return s;
 };
 
-Declaration::Declaration(string _id){
-   id = _id;
-}
+Declaration::Declaration(Node * _node, Node * _l_declaration){
+   node = _node;
+   l_declaration = _l_declaration;
+};
 string Declaration::to_s(int tab, int tabAux){
-    return getTab(tab) + "ident: " + id + "\n";
+    string s = node->to_s(tab);
+    if(l_declaration){
+       s += getTab(tab) + "RegisterBlock\n" + l_declaration->to_s(tab+1);
+    };
+    return s;
 }
+
+Id::Id(string _id){
+    id = _id;
+};
+string Id::to_s(int tab, int tabAux){
+    return getTab(tab) + "ident: " + id + "\n";
+};
+
+Asign::Asign(Node * _id){
+    id = _id;
+};
+string Asign::to_s(int tab, int tabAux){
+    return getTab(tab) + "Asign\n" + id->to_s(tab+1) + getTab(tab+1) + "Exp\n" + getTab(tab+2) + "Literal: 5\n";
+};
 
 
 
