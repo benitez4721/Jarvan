@@ -52,11 +52,11 @@ string DeclarationList::to_s(int tab, int tabAux) {
     string s = "";
     if(l_declaration != NULL){
         s += l_declaration->to_s(tab, tabAux + 1);
-        s += getTab((tab - tabAux) + listlength - 1) + "Sequencing\n" + declaration->to_s((tab - tabAux) + listlength);
+        s += getTab((tab - tabAux) + listlength - 1) + "Sequencing\n" + declaration->to_s((tab - tabAux) + listlength, listlength - 1);
     }
     else {
         listlength =  tabAux;
-        s += declaration->to_s(tab);
+        s += declaration->to_s(tab, listlength - 1);
     }
     return s;
 };
@@ -66,10 +66,12 @@ Declaration::Declaration(Node * _node, Node * _l_declaration){
    l_declaration = _l_declaration;
 };
 string Declaration::to_s(int tab, int tabAux){
-    string s = node->to_s(tab);
+    string s = "";
     if(l_declaration){
-       s += getTab(tab) + "RegisterBlock\n" + l_declaration->to_s(tab+1);
-    };
+        s += getTab(tab) + "RegisterBlock\n" + l_declaration->to_s(tab+1, tabAux);
+    }else{
+        s += node->to_s(tab);
+    }
     return s;
 }
 

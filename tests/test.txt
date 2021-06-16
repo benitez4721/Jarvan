@@ -4,13 +4,14 @@
     bsf b;
     bs c;
     letra l;
-    Labia j
+    Labia j;
+    Metro<qlq[3]> a;
+    Metrobus<bs[]> b;
+    Bululu j {
+        bs int;
+        bsf float
+    };
 
-    a = 8;
-    a = 25;
-    a = 56;
-    a = 98;
-    a = 76;
-    a = 23
+    qlq a = 18
 
 }

@@ -112,7 +112,7 @@ Asignacion          : Id ASIGN Exp                                      {$$ = ne
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
 			        | ID Corchetes 								        {cout << "ID Corchetes \n";}
-			        | ID 										        {$$ = new Id($1)}
+			        | ID										        {$$ = new Id($1)}
 			        ;
 
 Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
