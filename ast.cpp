@@ -116,7 +116,6 @@ Asign::Asign(Node * _id, Node * _exp){
     exp = _exp;
 };
 string Asign::to_s(int tab, int tabAux){
-    cout << "here";
     return getTab(tab) + "Asign\n" + id->to_s(tab+1) + getTab(tab+1) + "Exp\n" + exp->to_s(tab+2) + "\n";
 };
 
