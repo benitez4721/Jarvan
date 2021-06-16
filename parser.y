@@ -81,38 +81,39 @@
 %type <program> Program 
 
 %%
-Start               : Program                                                       {root_ast = $1;}
+Start               : Program                                                       {cout << "Program \n";}
                     | 
                     ;
 
-Program             :  OBLOCK Body CBLOCK                                           {$$ = new Program($2);}
-                    |  OBLOCK CBLOCK                                                {;}
+Program             :  OBLOCK Body CBLOCK                                           {cout << "OBLOCK Body CBLOCK \n";}
+                    |  OBLOCK CBLOCK                                                {cout << " OBLOCK CBLOCK \n";}
                     ;
 
-Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
-                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
-                    | InstList                                                            {$$ = new Body(NULL, $1);}
+Body                : BETICAS DeclarationList InstList                                    {cout << " BETICAS DeclarationList InstList \n";}
+                    | BETICAS DeclarationList                                             {cout << " BETICAS DeclarationList \n";}
+                    | InstList                                                            {cout << " InstList \n";}
                     ;
                     ;
 
 // Variables Declaration
 
-DeclarationList     : DeclarationList SEMICOLON Declaration                         {$$ = new DeclarationList($1, $3);}
-                    | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
+DeclarationList     : DeclarationList SEMICOLON Declaration                         {cout << " DeclarationList SEMICOLON Declaration \n";}
+                    | Declaration                                                   {cout << " Declaration \n";} 
                     ;
 
-Declaration         : Type Asignacion                                               {$$ = new Declaration($2, NULL);}
-                    | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
-                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
-                    | Type Id                                                       {$$ = new Declaration($2, NULL);}
+Declaration         : Type Asignacion                                               {cout << " Type Asignacion \n";}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {cout << " BUS Id OBLOCK DeclarationList CBLOCKId POINT ID \n";}
+                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {cout << " BULULU Id OBLOCK DeclarationList \n";}
+                    | Type Id                                              {cout << " Type Id \n";}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1)}
+Asignacion          : Id ASIGN Exp                                      {cout << " Id ASIGN Exp \n";}
                     ;
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
-			        | ID Corchetes 								        {cout << "ID Corchetes \n";}
-			        | ID 										        {$$ = new Id($1)}
+			        | POINTER ID                                        {cout << "POINTER ID \n";}
+                    | ID Corchetes 								        {cout << "ID Corchetes \n";}
+			        | ID 										        {cout << " ID \n";}
 			        ;
 
 Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
@@ -120,12 +121,12 @@ Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchet
                     | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
                     ;
 
-Type                : BS                                                    {;}
-                    | BSF                                                   {;}
-                    | LABIA                                                 {;}
-                    | LETRA                                                 {;}                                                
-                    | QLQ                                                   {;}
-                    | ArrayType LESS Type Corchetes GREATER                 {;}
+Type                : BS                                                    {cout << "BS \n";}
+                    | BSF                                                   {cout << "BSF \n";}
+                    | LABIA                                                 {cout << "LABIA \n";}
+                    | LETRA                                                 {cout << "LETRA \n";}                                                
+                    | QLQ                                                   {cout << "QLQ \n";}
+                    | ArrayType LESS Type Corchetes GREATER                 {cout << "ArrayType LESS Type Corchetes GREATER \n";}
                     ;
 
 ArrayType           : METRO                                                 {cout << "METRO \n";}
@@ -134,7 +135,7 @@ ArrayType           : METRO                                                 {cou
 
 // Literals
 
-Literal             : INT                                                   {;}                                                   
+Literal             : INT                                                   {cout << " INT \n";}                                                   
                     | FLOAT                                                 {cout << "FLOAT \n";}
                     | CHAR                                                  {cout << "CHAR \n";}
                     | STRING                                                {cout << "STRING \n";}                                             
@@ -176,7 +177,6 @@ Exp         : OPAR Exp CPAR                                                 {cou
             | Conversion                                                    {cout << "Conversion \n";}
             | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {cout << "FuncCall \n";}
-            | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;
 
 InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
@@ -189,6 +189,7 @@ Inst        : Conversion                                                        
             | FuncCall                                                          {cout << "FuncCall \n";}
             | Asignacion                                                        {cout << "Asignacion \n";}
             | ArrOp                                                             {cout << "ArrOp \n";}
+            | RESCATA Exp
             | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
             | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}
             ;
@@ -233,8 +234,8 @@ FuncCall    : ID OPAR CPAR                                                  {cou
             | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
             ;
 
-FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
-            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Program \n";}
+            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Program \n";}
             ;
 
 ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
