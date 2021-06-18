@@ -316,8 +316,7 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    // run_parser();
-    run_lexer();
+    run_parser();
     return 0;
 }
 
