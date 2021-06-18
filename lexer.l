@@ -17,7 +17,7 @@ int yycolumn = 1;
 %}
 
 int                      ([0-9]+)
-float                     ([0-9]+.[0-9]+)
+float                     ([0-9]+\.[0-9]+)
 char                    '(.|\\n|\\t)'
 id                      [a-zA-Z][a-zA-Z0-9_]*
 string                   (\".*\")

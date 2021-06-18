@@ -268,7 +268,6 @@ void run_lexer(){
             column = yycolumn - yyleng;  
         }
         if(nTokens[ntoken] != "ws" && !isComment){
-
             if(ntoken == ERROR){
                 errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
             }
@@ -292,6 +291,7 @@ void run_lexer(){
         }
     }else {
         for(int i = 0; i < tokens.size(); i++){
+            
             cout << tokens[i].to_str();
         }
     }
@@ -316,7 +316,8 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    run_parser();
+    // run_parser();
+    run_lexer();
     return 0;
 }
 

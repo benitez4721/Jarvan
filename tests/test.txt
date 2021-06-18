@@ -5,13 +5,10 @@
     bs c;
     letra l;
     Labia j;
-    Metro<qlq[3]> a;
-    Metrobus<bs[]> b;
-    Bululu j {
-        bs int;
-        bsf float
-    };
+    qlq a = elda;
+    bsf b = 1.5;
+    bs c = 6;
 
-    qlq a = 18
+    bs x = 1+1
 
 }
