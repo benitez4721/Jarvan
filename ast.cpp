@@ -15,7 +15,6 @@ string getTab(int tab){
     
 }
 
- 
 Program::Program(Node * _body){
    body = _body;
 };
@@ -111,13 +110,17 @@ string Id::to_s(int tab, int tabAux){
     return getTab(tab) + "ident: " + id + "\n";
 };
 
+// Asignacion
+
 Asign::Asign(Node * _id, Node * _exp){
     id = _id;
     exp = _exp;
 };
 string Asign::to_s(int tab, int tabAux){
-    return getTab(tab) + "Asign\n" + id->to_s(tab+1) + getTab(tab+1) + "Exp\n" + exp->to_s(tab+2) + "\n";
+    return getTab(tab) + "Asign\n" + id->to_s(tab+1) + getTab(tab+1) + "Exp\n" + exp->to_s(tab+2);
 };
+
+// Expresiones
 
 Exp::Exp(Node * _exp){
     exp = _exp;
@@ -126,10 +129,70 @@ string Exp::to_s(int tab, int tabAux){
     return exp->to_s(tab);
 }
 
+BinaryExp::BinaryExp(Node * _op1, Node * _op2, string _op) {
+    op1 = _op1;
+    op2 = _op2;
+    op = _op;
+    // if (_op  == "PLUS") {
+    //     op = "+";
+    // } else if (_op  == "MINUS") {
+    //     op = "-";
+    // } else if (_op  == "MULT") {
+    //     op = "*";
+    // } else if (_op  == "DIV") {
+    //     op = "-";
+    // } else if (_op  == "INTDIV") {
+    //     op = "-";
+    // } else if (_op  == "REST") {
+    //     op = "-";
+    // } else if (_op  == "POTEN") {
+    //     op = "^";
+    // } else if (_op  == "AND") {
+    //     op = "-";
+    // } else if (_op  == "OR") {
+    //     op = "-";
+    // }
+    
+};
+string BinaryExp::to_s(int tab, int tabAux){
+    return getTab(tab) + op + "\n" + op1->to_s(tab+1) + op2->to_s(tab+1); 
+}
+
+
+
+// Literales
+
 LiteralInt::LiteralInt(int _value){
    value = _value;
 };
 string LiteralInt::to_s(int tab, int tabAux){
+    return getTab(tab) + "Literal: " + to_string(value) + "\n"; 
+}
+
+LiteralFloat::LiteralFloat(float _value){
+   value = _value;
+};
+string LiteralFloat::to_s(int tab, int tabAux){
     return getTab(tab) + "Literal: " + to_string(value); 
 }
 
+LiteralChar::LiteralChar(char _value){
+   value = _value;
+};
+string LiteralChar::to_s(int tab, int tabAux){
+    return getTab(tab) + "Literal: " + value; 
+}
+
+LiteralStr::LiteralStr(string _value){
+   value = _value;
+};
+string LiteralStr::to_s(int tab, int tabAux){
+    return getTab(tab) + "Literal: " + value; 
+};
+
+LiteralBool::LiteralBool(bool _value){
+   value = _value;
+};
+string LiteralBool::to_s(int tab, int tabAux){
+    return getTab(tab) + "Literal: " + "true"; 
+}
