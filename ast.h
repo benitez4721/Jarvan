@@ -10,6 +10,52 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class BinaryExp : public Node {
+    public:
+        Node * op1;
+        Node * op2;
+        string op;
+        BinaryExp(Node * op1, Node * op2, string op);
+        string to_s(int tab, int tabAux = 0);
+};
+
+// class PlusOp : public BinaryExp {
+//     public:
+//         PlusOp(Node * op1, Node * op2, string op)
+// }
+
+class LiteralBool : public Node {
+    public: 
+        bool value;
+        LiteralBool(bool value);
+        string to_s(int tab, int tabAux = 0);
+
+};
+
+class LiteralStr : public Node {
+    public: 
+        string value;
+        LiteralStr(string value);
+        string to_s(int tab, int tabAux = 0);
+
+};
+
+class LiteralChar : public Node {
+    public: 
+        char value;
+        LiteralChar(char value);
+        string to_s(int tab, int tabAux = 0);
+
+};
+
+class LiteralFloat : public Node {
+    public: 
+        float value;
+        LiteralFloat(float value);
+        string to_s(int tab, int tabAux = 0);
+
+};
+
 class LiteralInt : public Node {
     public: 
         int value;
@@ -17,6 +63,7 @@ class LiteralInt : public Node {
         string to_s(int tab, int tabAux = 0);
 
 };
+
 class Exp : public Node {
     public:
         Node *exp;

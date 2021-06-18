@@ -5,10 +5,7 @@
     bs c;
     letra l;
     Labia j;
-    qlq a = elda;
-    bsf b = 1.5;
     bs c = 6;
-
-    bs x = 1+1
+    qlq a = elda
 
 }

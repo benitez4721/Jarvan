@@ -63,7 +63,8 @@
 %token OPAR 41 CPAR 42 OBRACKET 43 CBRACKET 44
 %token TAM 45 SITIO 46 METELE 47 SACALE 48 VOLTEA 49 
 %token HASH 50
-%token ELDA 51 COBA 52 
+%token <boolean> ELDA 51 
+%token <boolean> COBA 52 
 %token COMMA 53
 %token PORSIA 54 SINO 55 NIMODO 56 TANTEA 57 CASO 58
 %token VACILA 59 IN 60 ACHANTA 61 SIGUELA 62
@@ -107,7 +108,7 @@ Declaration         : Type Asignacion                                           
                     | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1, $3)}
+Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1, $3);}
                     ;
 
 Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
@@ -135,11 +136,11 @@ ArrayType           : METRO                                                 {cou
 // Literals
 
 Literal             : INT                                                   {$$ = new LiteralInt($1);}                                                   
-                    | FLOAT                                                 {cout << "FLOAT \n";}
-                    | CHAR                                                  {cout << "CHAR \n";}
-                    | STRING                                                {cout << "STRING \n";}                                             
-                    | ELDA                                                  {cout << "ELDA \n";}
-                    | COBA                                                  {cout << "COBA \n";}
+                    | FLOAT                                                 {$$ = new LiteralFloat($1);}
+                    | CHAR                                                  {$$ = new LiteralChar($1);}
+                    | STRING                                                {$$ = new LiteralStr($1);}                                             
+                    | ELDA                                                  {$$ = new LiteralBool(true);}
+                    | COBA                                                  {$$ = new LiteralBool(false);}
                     ;
 
 Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}
@@ -149,15 +150,15 @@ List                : Exp                                               {cout <<
                     | List COMMA Exp                                    {cout << "List COMMA Exp \n";}                                             
                     ;
 
-Exp         : OPAR Exp CPAR                                                 {cout << "OPAR Exp CPAR \n";}
+Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2);}
 
-            | Exp PLUS Exp                                                  {cout << "Exp PLUS Exp \n";}
-            | Exp MINUS Exp                                                 {cout << "Exp MINUS Exp \n";}
-            | Exp MULT Exp                                                  {cout << "Exp MULT Exp \n";}
-            | Exp DIV Exp                                                   {cout << "Exp DIV Exp \n";}
-            | Exp POTEN Exp                                                 {cout << "Exp POTEN Exp \n";}
-            | Exp INTDIV Exp                                                {cout << "Exp INTDIV Exp \n";}
-            | Exp REST Exp                                                  {cout << "Exp REST Exp \n";}
+            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+");}
+            | Exp MINUS Exp                                                 {$$ = new BinaryExp($1, $3, "-");}
+            | Exp MULT Exp                                                  {$$ = new BinaryExp($1, $3, "*");}
+            | Exp DIV Exp                                                   {$$ = new BinaryExp($1, $3, "/");}
+            | Exp POTEN Exp                                                 {$$ = new BinaryExp($1, $3, "^");}
+            | Exp INTDIV Exp                                                {$$ = new BinaryExp($1, $3, "//");}
+            | Exp REST Exp                                                  {$$ = new BinaryExp($1, $3, "%");}
 
             | Exp AND Exp                                                   {cout << "Exp AND Exp \n";}
             | Exp OR Exp                                                    {cout << "Exp OR Exp \n";}
@@ -317,6 +318,7 @@ int main(int argc, char *argv[]){
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
     run_parser();
+    // run_lexer();
     return 0;
 }
 
