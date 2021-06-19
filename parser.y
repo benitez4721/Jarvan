@@ -169,16 +169,16 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Exp INTDIV Exp                                                {$$ = new BinaryExp($1, $3, "//");}
             | Exp REST Exp                                                  {$$ = new BinaryExp($1, $3, "%");}
 
-            | Exp AND Exp                                                   {cout << "Exp AND Exp \n";}
-            | Exp OR Exp                                                    {cout << "Exp OR Exp \n";}
+            | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&")}
+            | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||")}
             | NOT Exp                                                       {cout << "NOT Exp \n";}
 
-            | Exp EQUAL Exp                                                 {cout << "Exp EQUAL Exp \n";}
-            | Exp NQUAL Exp                                                 {cout << "Exp NQUAL Exp \n";}
-            | Exp GEQ Exp                                                   {cout << "Exp GEQ Exp \n";}
-            | Exp LEQ Exp                                                   {cout << "Exp LEQ Exp \n";}
-            | Exp GREATER Exp                                               {cout << "Exp GREATER Exp \n";}
-            | Exp LESS Exp                                                  {cout << "Exp LESS Exp \n";}
+            | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==")}
+            | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=")}
+            | Exp GEQ Exp                                                   {$$ = new BinaryExp($1, $3, ">=")}
+            | Exp LEQ Exp                                                   {$$ = new BinaryExp($1, $3, "<=")}
+            | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">")}
+            | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<")}
         
             | ArrOp                                                         {cout << "ArrOp \n";}
             | Conversion                                                    {cout << "Conversion \n";}
@@ -198,8 +198,8 @@ Inst        : Conversion                                                        
             | FuncCall                                                          {cout << "FuncCall \n";}
             | Asignacion                                                        {$$ = $1;}
             | ArrOp                                                             {cout << "ArrOp \n";}
-            | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
-            | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}
+            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir")}
+            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer")}
             ;
 
 Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout << "EFECTIVO OPAR Literal OPAR \n";}

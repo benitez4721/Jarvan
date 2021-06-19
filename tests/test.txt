@@ -7,8 +7,15 @@
     Labia j;
     bs c = 6
 
-    a[1][1][8][10][12][13][d] = 5 - 4;
-    a.t.t.t = 4;
-    b[7 + 8 + 9] = 3
+    imprimir(a);
+    imprimir("hola mundo");
+    imprimir("hola mundo");
+    leer(id);
+    imprimir("hola mundo");
+    imprimir("hola mundo");
+    imprimir("hola mundo");
+    imprimir("hola mundo");
+    imprimir(1 + (8 * y))
+
 
 }

@@ -10,6 +10,14 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class Io : public Node {
+    public:
+        Node * exp;
+        string inst;
+        Io(Node * exp, string inst);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class Array : public Node {
     public:
         Node * l_array;

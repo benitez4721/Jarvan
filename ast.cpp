@@ -32,12 +32,12 @@ string Body::to_s(int tab, int tabAux){
     string s = getTab(tab) + "Block\n";
 
     if (l_declaration != NULL) {
-        s += l_declaration->to_s(tab+1, tab);
+        s += getTab(tab+1) + "Beticas\n" + l_declaration->to_s(tab+2, tab);
         if(l_instruction != NULL){
-            s += l_instruction->to_s(tab+1,tab);
+            s += getTab(tab+1) + "Instructions\n" + l_instruction->to_s(tab+2,tab);
         };
     } else {
-        s +=  l_instruction->to_s(tab+1, tab);
+        s += getTab(tab+1) + "Instructions\n" + l_instruction->to_s(tab+1, tab);
     } 
     return s;
 };
@@ -134,32 +134,10 @@ BinaryExp::BinaryExp(Node * _op1, Node * _op2, string _op) {
     op1 = _op1;
     op2 = _op2;
     op = _op;
-    // if (_op  == "PLUS") {
-    //     op = "+";
-    // } else if (_op  == "MINUS") {
-    //     op = "-";
-    // } else if (_op  == "MULT") {
-    //     op = "*";
-    // } else if (_op  == "DIV") {
-    //     op = "-";
-    // } else if (_op  == "INTDIV") {
-    //     op = "-";
-    // } else if (_op  == "REST") {
-    //     op = "-";
-    // } else if (_op  == "POTEN") {
-    //     op = "^";
-    // } else if (_op  == "AND") {
-    //     op = "-";
-    // } else if (_op  == "OR") {
-    //     op = "-";
-    // }
-    
 };
 string BinaryExp::to_s(int tab, int tabAux){
     return getTab(tab) + op + "\n" + op1->to_s(tab+1) + op2->to_s(tab+1); 
 }
-
-
 
 // Literales
 
@@ -270,4 +248,12 @@ Array::Array(Node * _l_array){
 };
 string Array::to_s(int tab, int tabAux){
     return getTab(tab) + "Array\n" + l_array->to_s(tab+1);
+}
+
+Io::Io(Node * _exp, string _inst){
+    exp = _exp;
+    inst = _inst;
+};
+string Io::to_s(int tab, int tabAux){
+    return getTab(tab) + inst + "\n" + exp->to_s(tab+1);
 }
