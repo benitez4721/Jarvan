@@ -4,6 +4,7 @@
 using namespace std;
 
 int listlength;
+int instListLen;
 
 string getTab(int tab){
     string s="";
@@ -28,10 +29,10 @@ Body::Body(Node * _l_declaration, Node * _l_instruction){
 };
 string Body::to_s(int tab, int tabAux){
 
-    string s = "";
+    string s = getTab(tab) + "Block\n";
 
     if (l_declaration != NULL) {
-        s += getTab(tab) + "Block\n" + l_declaration->to_s(tab+1, tab);
+        s += l_declaration->to_s(tab+1, tab);
         if(l_instruction != NULL){
             s += l_instruction->to_s(tab+1,tab);
         };
@@ -84,11 +85,11 @@ string InstList::to_s(int tab, int tabAux) {
     string s = "";
     if(l_instruction != NULL){
         s += l_instruction->to_s(tab, tabAux + 1);
-        s += getTab((tab - tabAux) + listlength - 1) + "Sequencing\n" + instruction->to_s((tab - tabAux) + listlength);
+        s += getTab((tab - tabAux) + instListLen - 1) + "Sequencing\n" + instruction->to_s((tab - tabAux) + instListLen, instListLen - 1);
     }
     else {
-        listlength =  tabAux;
-        s += instruction->to_s(tab);
+        instListLen = tabAux;
+        s += instruction->to_s(tab, instListLen - 1);
     }
     return s;
 };
@@ -220,5 +221,53 @@ string ListAccesor::to_s(int tab, int tabAux){
         s += accesor->to_s(tab);
     }
     return s;
-    // return getTab(tab) + "Accesor";
+}
+
+ListIndexing::ListIndexing(Node * _l_index, Node * _exp){
+    l_index = _l_index;
+    exp = _exp;
+};
+string ListIndexing::to_s(int tab, int tabAux){
+    string s = "";
+    if(l_index != NULL){
+        s += l_index->to_s(tab, tabAux + 1);
+        s += getTab((tab - tabAux) + listlength - 1) + "Indexing\n" + exp->to_s((tab - tabAux) + listlength);
+    }
+    else {
+        listlength =  tabAux;
+        s += exp->to_s(tab);
+    }
+    return s;
+}
+
+Indexing::Indexing(Node * _id, Node * _l_index){
+    l_index = _l_index;
+    id = _id;
+};
+string Indexing::to_s(int tab, int tabAux){
+    return getTab(tab) + "Indexing\n" + id->to_s(tab+1) + l_index->to_s(tab+1);
+}
+
+ArrayList::ArrayList(Node * _l_exp, Node * _exp){
+    l_exp = _l_exp;
+    exp = _exp;
+};
+string ArrayList::to_s(int tab, int tabAux){
+    string s = "";
+    if(l_exp != NULL){
+        s += l_exp->to_s(tab, tabAux + 1);
+        s += getTab((tab - tabAux) + listlength - 1) + "Comma\n" + exp->to_s((tab - tabAux) + listlength);
+    }
+    else {
+        listlength =  tabAux;
+        s += exp->to_s(tab);
+    }
+    return s;
+}
+
+Array::Array(Node * _l_array){
+    l_array = _l_array;
+};
+string Array::to_s(int tab, int tabAux){
+    return getTab(tab) + "Array\n" + l_array->to_s(tab+1);
 }

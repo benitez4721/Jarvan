@@ -78,7 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array
 %type <program> Program 
 
 %%
@@ -115,7 +115,7 @@ Asignacion          : Lvalue ASIGN Exp                                      {$$ 
                     ;
 
 Lvalue              : ListAccesor                                       {$$ = $1;}
-                    | Id ArrayIndexing                                  {;}
+                    | Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
                     ; 
 
 ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
@@ -125,8 +125,8 @@ ListAccesor         : ListAccesor POINT Id                              {$$ = ne
 Id			        : ID										        {$$ = new Id($1);}
 			        ;
 
-ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
-                    | OBRACKET Exp CBRACKET                         {cout << "OBRACKET Exp CBRACKET \n";}
+ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {$$ = new ListIndexing($1, $3)}
+                    | OBRACKET Exp CBRACKET                             {$$ = new ListIndexing(NULL, $2)}
                     ;
 
 Type                : BS                                                    {;}
@@ -137,8 +137,8 @@ Type                : BS                                                    {;}
                     | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
                     ;
 
-ArrayType           : METRO                                                 {cout << "METRO \n";}
-                    | METROBUS                                              {cout << "METROBUS \n";}
+ArrayType           : METRO                                                 {;}
+                    | METROBUS                                              {;}
                     ;
 
 // Literals
@@ -149,13 +149,14 @@ Literal             : INT                                                   {$$ 
                     | STRING                                                {$$ = new LiteralStr($1);}                                             
                     | ELDA                                                  {$$ = new LiteralBool("elda");}
                     | COBA                                                  {$$ = new LiteralBool("coba");}
+                    | Array                                                 {$$ = new Array($1)}
                     ;
 
-Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}
+Array               : OBRACKET List CBRACKET                            {$$ = $2;}
                     ;
 
-List                : Exp                                               {cout << "Exp \n";}                                               
-                    | List COMMA Exp                                    {cout << "List COMMA Exp \n";}                                             
+List                : Exp                                               {$$ = new ArrayList(NULL, $1);}                                               
+                    | List COMMA Exp                                    {$$ = new ArrayList($1, $3);}                                             
                     ;
 
 Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2);}
@@ -183,8 +184,7 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Conversion                                                    {cout << "Conversion \n";}
             | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {cout << "FuncCall \n";}
-            | Id                                                    {cout << "Id \n";}
-            | Array                                                    {cout << "Id \n";}
+            | Id                                                    {;}
             | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;
 

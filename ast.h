@@ -10,6 +10,36 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class Array : public Node {
+    public:
+        Node * l_array;
+        Array(Node * l_array);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class ArrayList : public Node {
+    public:
+        Node * l_exp;
+        Node * exp;
+        ArrayList(Node * l_exp, Node * exp);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Indexing : public Node {
+    public:
+        Node * id;
+        Node * l_index;
+        Indexing(Node * id, Node * l_index);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class ListIndexing : public Node {
+    public:
+        Node * l_index;
+        Node * exp;
+        ListIndexing(Node * l_index, Node * exp);
+        string to_s(int tab, int tabAux = 0);
+};
 
 class ListAccesor : public Node {
     public:
