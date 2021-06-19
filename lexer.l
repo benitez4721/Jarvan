@@ -27,7 +27,7 @@ string                   (\".*\")
 {char}                  {return CHAR;}
 {string}                {return STRING;}
 {int}                   {yylval.num = atoi(yytext);return INT;}
-{float}                 {return FLOAT;}
+{float}                 {yylval.flot = stof(yytext); return FLOAT;}
 [ \t\n]                  ; 
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}

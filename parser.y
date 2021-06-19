@@ -78,7 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst 
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor
 %type <program> Program 
 
 %%
@@ -102,23 +102,31 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
                     ;
 
-Declaration         : Type Asignacion                                               {$$ = new Declaration($2, NULL);}
+Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
                     | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {$$ = new Asign($1, $3);}
+Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
                     ;
 
-Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
-			        | ID Corchetes 								        {cout << "ID Corchetes \n";}
-			        | ID										        {$$ = new Id($1)}
+Asignacion          : Lvalue ASIGN Exp                                      {$$ = new Asign($1, $3);}
+                    ;
+
+Lvalue              : ListAccesor                                       {$$ = $1;}
+                    | Id ArrayIndexing                                  {;}
+                    ; 
+
+ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
+                    | Id                                                {$$ = new ListAccesor(NULL, $1);}
+                    ; 
+                    
+Id			        : ID										        {$$ = new Id($1);}
 			        ;
 
-Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
+ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
                     | OBRACKET Exp CBRACKET                         {cout << "OBRACKET Exp CBRACKET \n";}
-                    | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
                     ;
 
 Type                : BS                                                    {;}
@@ -126,7 +134,7 @@ Type                : BS                                                    {;}
                     | LABIA                                                 {;}
                     | LETRA                                                 {;}                                                
                     | QLQ                                                   {;}
-                    | ArrayType LESS Type Corchetes GREATER                 {;}
+                    | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
                     ;
 
 ArrayType           : METRO                                                 {cout << "METRO \n";}
@@ -139,8 +147,8 @@ Literal             : INT                                                   {$$ 
                     | FLOAT                                                 {$$ = new LiteralFloat($1);}
                     | CHAR                                                  {$$ = new LiteralChar($1);}
                     | STRING                                                {$$ = new LiteralStr($1);}                                             
-                    | ELDA                                                  {$$ = new LiteralBool(true);}
-                    | COBA                                                  {$$ = new LiteralBool(false);}
+                    | ELDA                                                  {$$ = new LiteralBool("elda");}
+                    | COBA                                                  {$$ = new LiteralBool("coba");}
                     ;
 
 Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}

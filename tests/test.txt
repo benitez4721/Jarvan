@@ -6,6 +6,6 @@
     letra l;
     Labia j;
     bs c = 6;
-    qlq a = elda
+    qlq a = 5 - 4
 
 }

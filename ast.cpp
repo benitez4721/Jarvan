@@ -187,12 +187,38 @@ LiteralStr::LiteralStr(string _value){
    value = _value;
 };
 string LiteralStr::to_s(int tab, int tabAux){
-    return getTab(tab) + "Literal: " + value; 
+    return getTab(tab) + "Literal: " + value + "\n"; 
 };
 
-LiteralBool::LiteralBool(bool _value){
+LiteralBool::LiteralBool(string _value){
    value = _value;
 };
 string LiteralBool::to_s(int tab, int tabAux){
-    return getTab(tab) + "Literal: " + "true"; 
+    return getTab(tab) + "Literal: " + value + "\n"; 
+};
+
+Accesor::Accesor(Node * _idNode, string _id){
+    idNode = _idNode;
+    id = _id;
+};
+string Accesor::to_s(int tab, int tabAux){
+    return getTab(tab) + "Accesor";
+}
+
+ListAccesor::ListAccesor(Node * _l_accesor, Node * _accesor){
+    l_accesor = _l_accesor;
+    accesor = _accesor;
+};
+string ListAccesor::to_s(int tab, int tabAux){
+    string s = "";
+    if(l_accesor != NULL){
+        s += l_accesor->to_s(tab, tabAux + 1);
+        s += getTab((tab - tabAux) + listlength - 1) + "AccesTo\n" + accesor->to_s((tab - tabAux) + listlength);
+    }
+    else {
+        listlength =  tabAux;
+        s += accesor->to_s(tab);
+    }
+    return s;
+    // return getTab(tab) + "Accesor";
 }

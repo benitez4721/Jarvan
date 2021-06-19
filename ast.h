@@ -10,6 +10,23 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+
+class ListAccesor : public Node {
+    public:
+        Node * l_accesor;
+        Node * accesor;
+        ListAccesor(Node * l_accesor, Node * accesor);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Accesor : public Node{
+    public:
+        Node * idNode;
+        string id;
+        Accesor(Node * idNode, string id);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class BinaryExp : public Node {
     public:
         Node * op1;
@@ -26,8 +43,8 @@ class BinaryExp : public Node {
 
 class LiteralBool : public Node {
     public: 
-        bool value;
-        LiteralBool(bool value);
+        string value;
+        LiteralBool(string value);
         string to_s(int tab, int tabAux = 0);
 
 };
