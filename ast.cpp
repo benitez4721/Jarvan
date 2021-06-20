@@ -5,6 +5,7 @@ using namespace std;
 
 int listlength;
 int instListLen;
+int argsList;
 
 string getTab(int tab){
     string s="";
@@ -315,5 +316,50 @@ EmbededFunc::EmbededFunc(string _inst, Node * _exp){
 string EmbededFunc::to_s(int tab, int tabAux){
     string s = "";
     s += getTab(tab) + inst + "\n" + exp->to_s(tab+1); 
+    return s;
+}
+
+Chamba::Chamba(Node * _id, Node * _params, Node * _program){
+    id = _id;
+    params = _params;
+    program = _program;
+};
+string Chamba::to_s(int tab, int tabAux){
+    string s = getTab(tab) + "Chamba\n";
+    if(params != NULL){
+       s += getTab(tab + 1) + "Params\n" + params->to_s(tab + 2) + program->to_s(tab + 1);
+    }
+    else{
+        s += program->to_s(tab+1);
+    }
+    return s;
+}
+
+Params::Params(Node * _l_params, Node * _param){
+    l_params = _l_params;
+    param = _param;
+};
+string Params::to_s(int tab, int tabAux){
+    string s = "";
+    if(l_params != NULL){
+        s += l_params->to_s(tab, tabAux + 1);
+        s += getTab((tab - tabAux) + argsList - 1) + "Comma\n" + param->to_s((tab - tabAux) + argsList, argsList - 1);
+    }
+    else {
+        argsList =  tabAux;
+        s += param->to_s(tab, argsList - 1);
+    }
+    return s;
+}
+
+FunCall::FunCall(Node * _id, Node * _args){
+    id = _id;
+    args = _args;
+};
+string FunCall::to_s(int tab, int tabAux){
+    string s = getTab(tab) + "Funcall\n" + id->to_s(tab+1);
+    if(args != NULL){
+       s += getTab(tab + 1) + "Args\n" + args->to_s(tab + 2);
+    }
     return s;
 }
