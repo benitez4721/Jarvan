@@ -10,6 +10,34 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class VacilaIn : public Node {
+    public:
+        Node * id;
+        Node * exp;
+        Node * program;
+        VacilaIn(Node * id, Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Repeticion2 : public Node {
+    public:
+        Node * exp;
+        Node * program;
+        Repeticion2(Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Repeticion : public Node {
+    public:
+        Node * declaration;
+        Node * exp1;
+        Node * exp2;
+        Node * id;
+        Node * program;
+        Repeticion(Node * declaration, Node * exp1, Node * exp2, Node * id, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class FunCall : public Node {
     public:
         Node * id;

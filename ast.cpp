@@ -363,3 +363,36 @@ string FunCall::to_s(int tab, int tabAux){
     }
     return s;
 }
+
+Repeticion::Repeticion(Node * _declaration, Node * _exp1, Node * _exp2, Node * _id, Node * _program){
+    declaration = _declaration;
+    exp1 = _exp1;
+    exp2 = _exp2;
+    id = _id;
+    program = _program;
+};
+string Repeticion::to_s(int tab, int tabAux){
+    string s = getTab(tab) + "Vacila\n";
+    if (declaration != NULL) {
+        s += declaration->to_s(tab+1);
+        s += getTab(tab+1) + exp1->to_s(tab+2) + exp2->to_s(tab+2);
+        s += getTab(tab+1) + program->to_s(tab+2);
+    } else {
+        s += id->to_s(tab+1);
+        s += getTab(tab) + "in\n" + exp1->to_s(tab+1);
+        s += getTab(tab) + program->to_s(tab+2);
+    }
+
+    return s;
+}
+
+Repeticion2::Repeticion2(Node * _exp, Node * _program){
+    exp = _exp;
+    program = _program;
+};
+string Repeticion2::to_s(int tab, int tabAux){
+    string s = getTab(tab) + "Pegao\n" + getTab(tab+1) + "Guard\n" + exp->to_s(tab+2) + program->to_s(tab+1);
+
+    return s;
+}
+

@@ -78,7 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
 %type <program> Program 
 
 %%
@@ -190,15 +190,15 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
 InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);}
             | Inst                                                          {$$ = new InstList(NULL, $1);}
 
-Inst        : Conversion                                                        {$$ = $1}
+Inst        : Conversion                                                        {$$ = $1;}
             | Seleccion                                                         {$$ = $1;}
-            | Repeticion                                                        {cout << "Repeticion \n";}
-            | FuncDef                                                           {$$ = $1}
-            | FuncCall                                                          {$$ = $1}
+            | Repeticion                                                        {$$ = $1;}
+            | FuncDef                                                           {$$ = $1;}
+            | FuncCall                                                          {$$ = $1;}
             | Asignacion                                                        {$$ = $1;}
-            | ArrOp                                                             {$$ = $1}
-            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir")}
-            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer")}
+            | ArrOp                                                             {$$ = $1;}
+            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
+            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
             | Program                                                           {$$ = $1;}
             ;
 
@@ -219,9 +219,9 @@ Casos       : Casos CASO OPAR Exp CPAR Program                                {$
             | CASO OPAR Exp CPAR Program                                      {$$ = new Caso(NULL, $3, $5);}
             ;
 
-Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {cout << "VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Start \n";}
-            | VACILA OPAR Id IN Exp CPAR Program                                   {cout << "VACILA OPAR Id IN Exp CPAR Start \n";}  
-            | PEGAO OPAR Exp CPAR Program                                          {cout << "PEGAO OPAR Exp CPAR Start \n";} 
+Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {$$ = new Repeticion($3, $5, $7, NULL, $9);}
+            | VACILA OPAR Id IN Exp CPAR Program                                   {$$ = new Repeticion(NULL, $5, NULL, $3, $7);}  
+            | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);} 
             ;
 
 ArrOp       : TAM OPAR Exp CPAR                                            {$$ = new EmbededFunc("Tam", $3)}
@@ -331,16 +331,12 @@ int main(int argc, char *argv[]){
     }
 
     if (argc > 2){
-        cout << argc << endl;
 		for (int i = 2; i < argc; i++ ){
-            cout << "Inside the for" << argv[i] << endl;
 			string arg(argv[i]);
 			if (arg == "-l"){
-                cout << "Inside the -l" << endl;
 				run_lexer();
 			}
 			else if (arg == "-p"){
-                cout << "Inside the -p" << endl;
 				run_parser();
 			}
 		}

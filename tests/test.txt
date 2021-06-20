@@ -1,7 +1,13 @@
 {
-  m(a,b,d,a);
-  Chamba bs a(bs j,bs i){
-      a = 7
+  vacila (bs i = 1; i < 4; i+1) {
+
+    Beticas
+    bs a = 1
+
+  };
+
+  pegao (a) {
+    a = 1+1
   }
 
 }
