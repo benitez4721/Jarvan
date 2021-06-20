@@ -10,6 +10,31 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class FunCall : public Node {
+    public:
+        Node * id;
+        Node * args;
+        FunCall(Node * , Node * args);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Params : public Node {
+    public:
+        Node * l_params;
+        Node * param;
+        Params(Node * l_params , Node * param);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Chamba : public Node {
+    public:
+        Node * id;
+        Node * params;
+        Node * program;
+        Chamba(Node * id , Node * params, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class EmbededFunc : public Node {
     public:
         string inst;
@@ -108,11 +133,6 @@ class BinaryExp : public Node {
         BinaryExp(Node * op1, Node * op2, string op);
         string to_s(int tab, int tabAux = 0);
 };
-
-// class PlusOp : public BinaryExp {
-//     public:
-//         PlusOp(Node * op1, Node * op2, string op)
-// }
 
 class LiteralBool : public Node {
     public: 

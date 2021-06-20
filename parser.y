@@ -78,7 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args
 %type <program> Program 
 
 %%
@@ -180,10 +180,10 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">")}
             | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<")}
         
-            | ArrOp                                                         {cout << "ArrOp \n";}
-            | Conversion                                                    {cout << "Conversion \n";}
+            | ArrOp                                                         {$$ = $1}
+            | Conversion                                                    {$$ = $1}
             | Literal                                                       {$$ = $1;}                                                          
-            | FuncCall                                                      {cout << "FuncCall \n";}
+            | FuncCall                                                      {$$ = $1}
             | Lvalue                                                        {$$ = $1}
             ;
 
@@ -193,8 +193,8 @@ InstList    : InstList SEMICOLON Inst                                       {$$ 
 Inst        : Conversion                                                        {$$ = $1}
             | Seleccion                                                         {$$ = $1;}
             | Repeticion                                                        {cout << "Repeticion \n";}
-            | FuncDef                                                           {cout << "FuncDef \n";}
-            | FuncCall                                                          {cout << "FuncCall \n";}
+            | FuncDef                                                           {$$ = $1}
+            | FuncCall                                                          {$$ = $1}
             | Asignacion                                                        {$$ = $1;}
             | ArrOp                                                             {$$ = $1}
             | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir")}
@@ -233,17 +233,22 @@ ArrOp       : TAM OPAR Exp CPAR                                            {$$ =
 
 // // Sobre las funciones
 
-FuncCall    : ID OPAR CPAR                                                  {cout << "ID OPAR CPAR \n";}
-            | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
+FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3);}
             ;
 
-FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
-            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+Args        : Args COMMA Exp                                                {$$ = new Params($1, $3);}
+            | Exp                                                           {$$ = new Params(NULL, $1);}
+            |                                                               {$$ = NULL;}
+            ;
+            
+
+FuncDef     : CHAMBA Type Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
+            | CHAMBA NADA Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
             ;
 
-ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
-            | Declaration                                                   {cout << "Declaration \n";}
-            |                                                               {cout << "Empty Param \n";}
+ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);}
+            | Declaration                                                   {$$ = new Params(NULL, $1)}
+            |                                                               {$$ = NULL}
             ;
 
 %%

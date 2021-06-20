@@ -1,6 +1,7 @@
 {
-    devalua(a);
-    efectivo(4 + "hola");
-    tam(d.d);
-    voltea(y)
+  m(a,b,d,a);
+  Chamba bs a(bs j,bs i){
+      a = 7
+  }
+
 }
