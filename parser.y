@@ -63,7 +63,8 @@
 %token OPAR 41 CPAR 42 OBRACKET 43 CBRACKET 44
 %token TAM 45 SITIO 46 METELE 47 SACALE 48 VOLTEA 49 
 %token HASH 50
-%token ELDA 51 COBA 52 
+%token <boolean> ELDA 51 
+%token <boolean> COBA 52 
 %token COMMA 53
 %token PORSIA 54 SINO 55 NIMODO 56 TANTEA 57 CASO 58
 %token VACILA 59 IN 60 ACHANTA 61 SIGUELA 62
@@ -77,7 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array
 %type <program> Program 
 
 %%
@@ -101,97 +102,106 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     | Declaration                                                   {cout << " Declaration \n";} 
                     ;
 
-Declaration         : Type Asignacion                                               {cout << " Type Asignacion \n";}
-                    | BUS Id OBLOCK DeclarationList CBLOCK                          {cout << " BUS Id OBLOCK DeclarationList CBLOCKId POINT ID \n";}
-                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {cout << " BULULU Id OBLOCK DeclarationList \n";}
-                    | Type Id                                              {cout << " Type Id \n";}
+
+Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
+                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
+                    | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
-Asignacion          : Id ASIGN Exp                                      {cout << " Id ASIGN Exp \n";}
+Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
                     ;
 
-Id           		: Id POINT ID										{cout << " Id POINT ID \n";}
-			        | POINTER ID                                        {cout << "POINTER ID \n";}
-                    | ID Corchetes 								        {cout << "ID Corchetes \n";}
-			        | ID 										        {cout << " ID \n";}
+Asignacion          : Lvalue ASIGN Exp                                      {$$ = new Asign($1, $3);}
+                    ;
+
+Lvalue              : ListAccesor                                       {$$ = $1;}
+                    | Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
+                    ; 
+
+ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
+                    | Id                                                {$$ = new ListAccesor(NULL, $1);}
+                    ; 
+                    
+Id			        : ID										        {$$ = new Id($1);}
 			        ;
 
-Corchetes	        : Corchetes OBRACKET Exp CBRACKET  		        {cout << "Corchetes OBRACKET Exp CBRACKET \n";}
-                    | OBRACKET Exp CBRACKET                         {cout << "OBRACKET Exp CBRACKET \n";}
-                    | OBRACKET CBRACKET                         {cout << "OBRACKET CBRACKET \n";}
+ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {$$ = new ListIndexing($1, $3)}
+                    | OBRACKET Exp CBRACKET                             {$$ = new ListIndexing(NULL, $2)}
                     ;
 
-Type                : BS                                                    {cout << "BS \n";}
-                    | BSF                                                   {cout << "BSF \n";}
-                    | LABIA                                                 {cout << "LABIA \n";}
-                    | LETRA                                                 {cout << "LETRA \n";}                                                
-                    | QLQ                                                   {cout << "QLQ \n";}
-                    | ArrayType LESS Type Corchetes GREATER                 {cout << "ArrayType LESS Type Corchetes GREATER \n";}
+Type                : BS                                                    {;}
+                    | BSF                                                   {;}
+                    | LABIA                                                 {;}
+                    | LETRA                                                 {;}                                                
+                    | QLQ                                                   {;}
+                    | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
                     ;
 
-ArrayType           : METRO                                                 {cout << "METRO \n";}
-                    | METROBUS                                              {cout << "METROBUS \n";}
+ArrayType           : METRO                                                 {;}
+                    | METROBUS                                              {;}
                     ;
 
 // Literals
 
-Literal             : INT                                                   {cout << " INT \n";}                                                   
-                    | FLOAT                                                 {cout << "FLOAT \n";}
-                    | CHAR                                                  {cout << "CHAR \n";}
-                    | STRING                                                {cout << "STRING \n";}                                             
-                    | ELDA                                                  {cout << "ELDA \n";}
-                    | COBA                                                  {cout << "COBA \n";}
-                    | Array                                                 {cout << "Array \n";}
-                    | Id                                                    {cout << "Id \n";}
+Literal             : INT                                                   {$$ = new LiteralInt($1);}                                                   
+                    | FLOAT                                                 {$$ = new LiteralFloat($1);}
+                    | CHAR                                                  {$$ = new LiteralChar($1);}
+                    | STRING                                                {$$ = new LiteralStr($1);}                                             
+                    | ELDA                                                  {$$ = new LiteralBool("elda");}
+                    | COBA                                                  {$$ = new LiteralBool("coba");}
+                    | Array                                                 {$$ = new Array($1)}
+
                     ;
 
-Array               : OBRACKET List CBRACKET                            {cout << "OBRACKET List CBRACKET \n";}
+Array               : OBRACKET List CBRACKET                            {$$ = $2;}
                     ;
 
-List                : Exp                                               {cout << "Exp \n";}                                               
-                    | List COMMA Exp                                    {cout << "List COMMA Exp \n";}                                             
+List                : Exp                                               {$$ = new ArrayList(NULL, $1);}                                               
+                    | List COMMA Exp                                    {$$ = new ArrayList($1, $3);}                                             
                     ;
 
-Exp         : OPAR Exp CPAR                                                 {cout << "OPAR Exp CPAR \n";}
+Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2);}
 
-            | Exp PLUS Exp                                                  {cout << "Exp PLUS Exp \n";}
-            | Exp MINUS Exp                                                 {cout << "Exp MINUS Exp \n";}
-            | Exp MULT Exp                                                  {cout << "Exp MULT Exp \n";}
-            | Exp DIV Exp                                                   {cout << "Exp DIV Exp \n";}
-            | Exp POTEN Exp                                                 {cout << "Exp POTEN Exp \n";}
-            | Exp INTDIV Exp                                                {cout << "Exp INTDIV Exp \n";}
-            | Exp REST Exp                                                  {cout << "Exp REST Exp \n";}
+            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+");}
+            | Exp MINUS Exp                                                 {$$ = new BinaryExp($1, $3, "-");}
+            | Exp MULT Exp                                                  {$$ = new BinaryExp($1, $3, "*");}
+            | Exp DIV Exp                                                   {$$ = new BinaryExp($1, $3, "/");}
+            | Exp POTEN Exp                                                 {$$ = new BinaryExp($1, $3, "^");}
+            | Exp INTDIV Exp                                                {$$ = new BinaryExp($1, $3, "//");}
+            | Exp REST Exp                                                  {$$ = new BinaryExp($1, $3, "%");}
 
-            | Exp AND Exp                                                   {cout << "Exp AND Exp \n";}
-            | Exp OR Exp                                                    {cout << "Exp OR Exp \n";}
+            | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&")}
+            | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||")}
             | NOT Exp                                                       {cout << "NOT Exp \n";}
 
-            | Exp EQUAL Exp                                                 {cout << "Exp EQUAL Exp \n";}
-            | Exp NQUAL Exp                                                 {cout << "Exp NQUAL Exp \n";}
-            | Exp GEQ Exp                                                   {cout << "Exp GEQ Exp \n";}
-            | Exp LEQ Exp                                                   {cout << "Exp LEQ Exp \n";}
-            | Exp GREATER Exp                                               {cout << "Exp GREATER Exp \n";}
-            | Exp LESS Exp                                                  {cout << "Exp LESS Exp \n";}
+            | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==")}
+            | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=")}
+            | Exp GEQ Exp                                                   {$$ = new BinaryExp($1, $3, ">=")}
+            | Exp LEQ Exp                                                   {$$ = new BinaryExp($1, $3, "<=")}
+            | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">")}
+            | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<")}
         
             | ArrOp                                                         {cout << "ArrOp \n";}
             | Conversion                                                    {cout << "Conversion \n";}
             | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {cout << "FuncCall \n";}
+            | Id                                                    {;}
+            | POINTER ID                                                    {cout << "POINTER ID \n";}
             ;
 
-InstList    : InstList SEMICOLON Inst                                       {cout << "InstList SEMICOLON Inst \n";}
-            | Inst                                                          {cout << "Inst \n";}
+InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);}
+            | Inst                                                          {$$ = new InstList(NULL, $1);}
 
 Inst        : Conversion                                                        {cout << "Conversion \n";}
             | Seleccion                                                         {cout << "Seleccion \n";}
             | Repeticion                                                        {cout << "Repeticion \n";}
             | FuncDef                                                           {cout << "FuncDef \n";}
             | FuncCall                                                          {cout << "FuncCall \n";}
-            | Asignacion                                                        {cout << "Asignacion \n";}
+            | Asignacion                                                        {$$ = $1;}
             | ArrOp                                                             {cout << "ArrOp \n";}
-            | RESCATA Exp
-            | IMPRIMIR OPAR Exp CPAR                                            {cout << "IMPRIMIR OPAR Exp CPAR \n";}
-            | LEER OPAR ID CPAR                                                 {cout << "LEER OPAR ID CPAR \n";}
+            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir")}
+            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer")}
             ;
 
 Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout << "EFECTIVO OPAR Literal OPAR \n";}
@@ -269,7 +279,6 @@ void run_lexer(){
             column = yycolumn - yyleng;  
         }
         if(nTokens[ntoken] != "ws" && !isComment){
-
             if(ntoken == ERROR){
                 errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
             }
@@ -293,6 +302,7 @@ void run_lexer(){
         }
     }else {
         for(int i = 0; i < tokens.size(); i++){
+            
             cout << tokens[i].to_str();
         }
     }
@@ -318,6 +328,7 @@ int main(int argc, char *argv[]){
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
     run_parser();
+    // run_lexer();
     return 0;
 }
 

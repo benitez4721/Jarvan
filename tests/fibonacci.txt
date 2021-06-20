@@ -7,7 +7,7 @@
 
        porsia(n <= 0){
            imprimir("Debe ingresar un numero mayor a 0")
-       };
+       }
        nimodo{
            imprimir(0);
            porsia(n>=2){

@@ -17,7 +17,7 @@ int yycolumn = 1;
 %}
 
 int                      ([0-9]+)
-float                     ([0-9]+.[0-9]+)
+float                     ([0-9]+\.[0-9]+)
 char                    '(.|\\n|\\t)'
 id                      [a-zA-Z][a-zA-Z0-9_]*
 string                   (\".*\")
@@ -26,8 +26,8 @@ string                   (\".*\")
 %%
 {char}                  {return CHAR;}
 {string}                {return STRING;}
-{int}                   {return INT;}
-{float}                 {return FLOAT;}
+{int}                   {yylval.num = atoi(yytext);return INT;}
+{float}                 {yylval.flot = stof(yytext); return FLOAT;}
 [ \t\n]                  ; 
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}

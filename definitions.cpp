@@ -3,6 +3,8 @@
 #include<iostream>
 #include<string>
 #include "definitions.h"
+#include "ast.h"
+#include "parser.tab.h"
 #include <map>
 #include <regex>
 using namespace std;
@@ -64,13 +66,6 @@ void init_tokens_definitions(){
     nTokens[DIV] = "TkDiv";
     nTokens[INTDIV] = "TkIntDiv";
     nTokens[REST] = "TkRest";
-    nTokens[PLUSASIGN] = "TkPlusAsign";
-    nTokens[MINUSASIGN] = "TkMinusAsign";
-    nTokens[MULTASIGN] = "TkMultAsing";
-    nTokens[POTENASIGN] = "TkPotenAsign";
-    nTokens[DIVASIGN] = "TkDivAsign";
-    nTokens[INTDIVASIGN] = "TkIntDivAsign";
-    nTokens[RESTASIGN] = "TkRestAsign";
     nTokens[LESS] = "TkLess";
     nTokens[LEQ] = "TkLeq";
     nTokens[GREATER] = "TkGreater";
@@ -109,7 +104,6 @@ void init_tokens_definitions(){
     nTokens[FLOAT] = "TkFloat";
     nTokens[STRING] = "TkString";
     nTokens[CHAR] = "TkChar";
-    nTokens[WS] = "ws";
     nTokens[DEVALUA] = "TkDevalua";
     nTokens[EFECTIVO] = "TkEfectivo";
     nTokens[POINT] = "TkPoint";
