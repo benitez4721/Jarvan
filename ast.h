@@ -10,6 +10,41 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class EmbededFunc : public Node {
+    public:
+        string inst;
+        Node * exp;
+        EmbededFunc(string isnt, Node * exp);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Caso : public Node {
+    public:
+        Node * l_casos;
+        Node * exp;
+        Node * program;
+        Caso(Node * l_casos, Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Tantea : public Node {
+    public:
+        Node * id;
+        Node * casos;
+        Tantea(Node * id, Node * casos);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Seleccion : public Node {
+    public:
+        Node * guard;
+        Node * program;
+        Node * seleccion2;
+        string inst;
+        Seleccion(Node * guard, Node * program, Node * seleccion2, string inst);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class Io : public Node {
     public:
         Node * exp;
@@ -186,7 +221,6 @@ class Program : public Node{
     public: 
         Node * body;
         Program(Node * body);
-        string to_s();
-
+        string to_s(int tab, int tabAux);
 };
 

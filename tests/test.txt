@@ -1,21 +1,6 @@
 {
-    Beticas
-    qlq a;
-    bsf b;
-    bs c;
-    letra l;
-    Labia j;
-    bs c = 6
-
-    imprimir(a);
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    leer(id);
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir(1 + (8 * y))
-
-
+    devalua(a);
+    efectivo(4 + "hola");
+    tam(d.d);
+    voltea(y)
 }

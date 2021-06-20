@@ -19,8 +19,8 @@ string getTab(int tab){
 Program::Program(Node * _body){
    body = _body;
 };
-string Program::to_s(){
-    return body->to_s(0);
+string Program::to_s(int tab, int tabAux){
+    return body->to_s(tab);
 };
 
 Body::Body(Node * _l_declaration, Node * _l_instruction){
@@ -37,7 +37,7 @@ string Body::to_s(int tab, int tabAux){
             s += getTab(tab+1) + "Instructions\n" + l_instruction->to_s(tab+2,tab);
         };
     } else {
-        s += getTab(tab+1) + "Instructions\n" + l_instruction->to_s(tab+1, tab);
+        s += getTab(tab+1) + "Instructions\n" + l_instruction->to_s(tab+2, tab);
     } 
     return s;
 };
@@ -256,4 +256,64 @@ Io::Io(Node * _exp, string _inst){
 };
 string Io::to_s(int tab, int tabAux){
     return getTab(tab) + inst + "\n" + exp->to_s(tab+1);
+}
+
+Seleccion::Seleccion(Node * _guard, Node * _program, Node * _seleccion2, string _inst){
+    guard = _guard;
+    program = _program;
+    seleccion2 = _seleccion2;
+    inst = _inst;
+};
+string Seleccion::to_s(int tab, int tabAux){
+
+    string s = getTab(tab) + inst + "\n";
+
+    if(guard != NULL){
+        s += getTab(tab+1) + "Guard\n" + guard->to_s(tab+2) + program->to_s(tab+1);
+    }else{
+        s += program->to_s(tab+1);
+    }
+
+    if(seleccion2 != NULL){
+        s += seleccion2->to_s(tab);
+    }
+    return s;
+}
+
+Tantea::Tantea(Node * _id, Node * _casos){
+    id = _id;
+    casos = _casos;
+};
+string Tantea::to_s(int tab, int tabAux){
+    string s = "";
+    s += getTab(tab) + "Tantea\n" + id->to_s(tab+1) + getTab(tab+1) + "Cases\n" + casos->to_s(tab+2);
+    return s;
+}
+
+Caso::Caso(Node * _l_casos, Node * _exp, Node * _program){
+    l_casos = _l_casos;
+    exp = _exp;
+    program = _program;
+};
+string Caso::to_s(int tab, int tabAux){
+    string s = "";
+    if(l_casos != NULL){
+        s += l_casos->to_s(tab, tabAux + 1);
+        s += getTab((tab - tabAux) + listlength - 1) + "NextCase\n" + getTab((tab - tabAux) + listlength) + "Guard\n"  + exp->to_s((tab - tabAux) + listlength + 1) + program->to_s((tab - tabAux) + listlength);
+    }
+    else {
+        listlength =  tabAux;
+        s += getTab(tab) + "Guard\n" + exp->to_s(tab + 1) + program->to_s(tab);
+    }
+    return s;
+}
+
+EmbededFunc::EmbededFunc(string _inst, Node * _exp){
+    inst = _inst;
+    exp = _exp;
+};
+string EmbededFunc::to_s(int tab, int tabAux){
+    string s = "";
+    s += getTab(tab) + inst + "\n" + exp->to_s(tab+1); 
+    return s;
 }
