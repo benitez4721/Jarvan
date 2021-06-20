@@ -345,7 +345,7 @@ int main(int argc, char *argv[]){
 			}
 		}
 	} else {
-		// por ahora por defecto ejecuta el parser
+		// por defecto ejecuta el parser
 		run_parser();
 	}
 
