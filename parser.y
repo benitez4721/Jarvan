@@ -82,25 +82,26 @@
 %type <program> Program 
 
 %%
-Start               : Program                                                       {root_ast = $1;}
+Start               : Program                                                       {cout << "Program \n";}
                     | 
                     ;
 
-Program             :  OBLOCK Body CBLOCK                                           {$$ = new Program($2);}
-                    |  OBLOCK CBLOCK                                                {;}
+Program             :  OBLOCK Body CBLOCK                                           {cout << "OBLOCK Body CBLOCK \n";}
+                    |  OBLOCK CBLOCK                                                {cout << " OBLOCK CBLOCK \n";}
                     ;
 
-Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
-                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
-                    | InstList                                                            {$$ = new Body(NULL, $1);}
+Body                : BETICAS DeclarationList InstList                                    {cout << " BETICAS DeclarationList InstList \n";}
+                    | BETICAS DeclarationList                                             {cout << " BETICAS DeclarationList \n";}
+                    | InstList                                                            {cout << " InstList \n";}
                     ;
                     ;
 
 // Variables Declaration
 
-DeclarationList     : DeclarationList SEMICOLON Declaration                         {$$ = new DeclarationList($1, $3);}
-                    | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
+DeclarationList     : DeclarationList SEMICOLON Declaration                         {cout << " DeclarationList SEMICOLON Declaration \n";}
+                    | Declaration                                                   {cout << " Declaration \n";} 
                     ;
+
 
 Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
@@ -150,6 +151,7 @@ Literal             : INT                                                   {$$ 
                     | ELDA                                                  {$$ = new LiteralBool("elda");}
                     | COBA                                                  {$$ = new LiteralBool("coba");}
                     | Array                                                 {$$ = new Array($1)}
+
                     ;
 
 Array               : OBRACKET List CBRACKET                            {$$ = $2;}
@@ -242,8 +244,8 @@ FuncCall    : ID OPAR CPAR                                                  {cou
             | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
             ;
 
-FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
-            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Program \n";}
+            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Program \n";}
             ;
 
 ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
