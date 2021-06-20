@@ -320,8 +320,30 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    run_parser();
-    // run_lexer();
+    if (yyin == false){
+    	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
+    	return 0;
+    }
+
+    if (argc > 2){
+        cout << argc << endl;
+		for (int i = 2; i < argc; i++ ){
+            cout << "Inside the for" << argv[i] << endl;
+			string arg(argv[i]);
+			if (arg == "-l"){
+                cout << "Inside the -l" << endl;
+				run_lexer();
+			}
+			else if (arg == "-p"){
+                cout << "Inside the -p" << endl;
+				run_parser();
+			}
+		}
+	} else {
+		// por ahora por defecto ejecuta el parser
+		run_parser();
+	}
+
     return 0;
 }
 
