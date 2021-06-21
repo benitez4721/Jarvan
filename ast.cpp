@@ -396,3 +396,10 @@ string Repeticion2::to_s(int tab, int tabAux){
     return s;
 }
 
+Unary::Unary(Node * _exp, string _op){
+    exp = _exp;
+    op = _op;
+};
+string Unary::to_s(int tab, int tabAux){
+    return getTab(tab) + op + "\n" + exp->to_s(tab+1);
+}

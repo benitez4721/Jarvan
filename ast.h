@@ -10,6 +10,14 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class Unary : public Node {
+    public:
+        string op;
+        Node * exp;
+        Unary(Node * exp, string op);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class VacilaIn : public Node {
     public:
         Node * id;

@@ -64,7 +64,8 @@ string                   (\".*\")
 "!="                    {return NQUAL;}
 "&&"                    {return AND;}
 "||"                    {return OR;}
-"not"                     {return NOT;}
+"!"                     {return NOT;}
+"&"                     {return DEREFERENCE;}
 "("                     {return OPAR;}
 ")"                     {return CPAR;}
 "["                     {return OBRACKET;}

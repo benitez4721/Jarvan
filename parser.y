@@ -78,6 +78,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
+%token DEREFERENCE 76
 %type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
 %type <program> Program 
 
@@ -105,6 +106,8 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
 Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
+                    | Type POINTER Id                                               {$$ = new Declaration($3, NULL);}
+                    | Type POINTER Init                                               {$$ = new Declaration($3, NULL);}
                     | Type Id                                                       {$$ = new Declaration($2, NULL);}
                     ;
 
@@ -171,7 +174,9 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
 
             | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&")}
             | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||")}
-            | NOT Exp                                                       {cout << "NOT Exp \n";}
+            | NOT Exp                                                       {$$ = new Unary($2, "!")}
+            | MINUS Exp                                                     {$$ = new Unary($2, "-")}
+            | DEREFERENCE Id                                                {$$ = new Unary($2, "&")}
 
             | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==")}
             | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=")}
