@@ -259,12 +259,12 @@ ParamList   : ParamList COMMA Declaration                                   {$$ 
 %%
 
 void yyerror (char const *s) {
-    cout << "Sintax Error, unexpected: " << yytext << " en la fila " << yylineno << ", columna " << yycolumn-strlen(yytext) << "\n"; 
+    cout << "Sintax Error, unexpected: " << yytext << " in row " << yylineno << ", column " << yycolumn-strlen(yytext) << "\n"; 
     // fprintf (stderr, "%s%s\n", s);
 }
 
 void run_lexer(){
-    cout << "executing lexer" << endl;
+    cout << "executing lexer" << endl << endl;
     int ntoken;
     ntoken = yylex();
     int column = 1;
