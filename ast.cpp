@@ -364,6 +364,13 @@ string FunCall::to_s(int tab, int tabAux){
     return s;
 }
 
+Rescata::Rescata(Node * _exp){
+    exp = _exp;
+};
+string Rescata::to_s(int tab, int tabAux){
+    return getTab(tab) + "Rescata\n" + exp->to_s(tab+1);
+}
+
 Repeticion::Repeticion(Node * _declaration, Node * _exp1, Node * _exp2, Node * _id, Node * _program){
     declaration = _declaration;
     exp1 = _exp1;

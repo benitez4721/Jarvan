@@ -206,6 +206,7 @@ Inst        : Conversion                                                        
             | ArrOp                                                             {$$ = $1;}
             | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
             | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
+            | RESCATA Exp                                                       {$$ = new Rescata($2)}
             | Program                                                           {$$ = $1;}
             ;
 
