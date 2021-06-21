@@ -10,6 +10,94 @@ class Node {
         virtual string to_s(int tab, int tabAux = 0) { };
 };
 
+class VacilaIn : public Node {
+    public:
+        Node * id;
+        Node * exp;
+        Node * program;
+        VacilaIn(Node * id, Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Repeticion2 : public Node {
+    public:
+        Node * exp;
+        Node * program;
+        Repeticion2(Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Repeticion : public Node {
+    public:
+        Node * declaration;
+        Node * exp1;
+        Node * exp2;
+        Node * id;
+        Node * program;
+        Repeticion(Node * declaration, Node * exp1, Node * exp2, Node * id, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class FunCall : public Node {
+    public:
+        Node * id;
+        Node * args;
+        FunCall(Node * , Node * args);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Params : public Node {
+    public:
+        Node * l_params;
+        Node * param;
+        Params(Node * l_params , Node * param);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Chamba : public Node {
+    public:
+        Node * id;
+        Node * params;
+        Node * program;
+        Chamba(Node * id , Node * params, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class EmbededFunc : public Node {
+    public:
+        string inst;
+        Node * exp;
+        EmbededFunc(string isnt, Node * exp);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Caso : public Node {
+    public:
+        Node * l_casos;
+        Node * exp;
+        Node * program;
+        Caso(Node * l_casos, Node * exp, Node * program);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Tantea : public Node {
+    public:
+        Node * id;
+        Node * casos;
+        Tantea(Node * id, Node * casos);
+        string to_s(int tab, int tabAux = 0);
+};
+
+class Seleccion : public Node {
+    public:
+        Node * guard;
+        Node * program;
+        Node * seleccion2;
+        string inst;
+        Seleccion(Node * guard, Node * program, Node * seleccion2, string inst);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class Io : public Node {
     public:
         Node * exp;
@@ -73,11 +161,6 @@ class BinaryExp : public Node {
         BinaryExp(Node * op1, Node * op2, string op);
         string to_s(int tab, int tabAux = 0);
 };
-
-// class PlusOp : public BinaryExp {
-//     public:
-//         PlusOp(Node * op1, Node * op2, string op)
-// }
 
 class LiteralBool : public Node {
     public: 
@@ -186,7 +269,6 @@ class Program : public Node{
     public: 
         Node * body;
         Program(Node * body);
-        string to_s();
-
+        string to_s(int tab, int tabAux);
 };
 

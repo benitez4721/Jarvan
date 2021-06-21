@@ -173,14 +173,14 @@ Compuestos:
 -  `Metrobus<tipo[tamaño]>`: Listas, arreglos de tamaño dinámico.
 - `Bus`: Registro. Tipo de estructura que puede contener elementos de diferentes tipos.
 - `Bululu`: Registros variantes.
-- Apuntadores `@`: Apuntador a memoria del heap.
+- Apuntadores `~`: Apuntador a memoria del heap.
 -------------
 ```
 {
     Beticas
     Labia m = "Hola chamita";
     Metro<qlq[3]> a = [coba, elda, elda];
-    bs @z;
+    bs ~z;
     Bus chacaito {
         bsf pasaje = 10.2 ;
         labia canto = "Pasaje al entrar";

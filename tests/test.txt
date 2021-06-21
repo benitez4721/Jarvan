@@ -1,21 +1,13 @@
 {
+  vacila (bs i = 1; i < 4; i+1) {
+
     Beticas
-    qlq a;
-    bsf b;
-    bs c;
-    letra l;
-    Labia j;
-    bs c = 6
+    bs a = 1
 
-    imprimir(a);
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    leer(id);
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir("hola mundo");
-    imprimir(1 + (8 * y))
+  };
 
+  pegao (a) {
+    a = 1+1
+  }
 
 }

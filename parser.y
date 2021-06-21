@@ -80,7 +80,7 @@
 %token METRO 72 METROBUS 73
 %token NADA 74
 %token POINT 75
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
 %type <program> Program 
 
 %%
@@ -182,75 +182,75 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">")}
             | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<")}
         
-            | ArrOp                                                         {cout << "ArrOp \n";}
-            | Conversion                                                    {cout << "Conversion \n";}
+            | ArrOp                                                         {$$ = $1}
+            | Conversion                                                    {$$ = $1}
             | Literal                                                       {$$ = $1;}                                                          
-            | FuncCall                                                      {cout << "FuncCall \n";}
-            | Id                                                    {;}
-            | POINTER ID                                                    {cout << "POINTER ID \n";}
+            | FuncCall                                                      {$$ = $1}
+            | Lvalue                                                        {$$ = $1}
             ;
 
 InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);}
             | Inst                                                          {$$ = new InstList(NULL, $1);}
 
-Inst        : Conversion                                                        {cout << "Conversion \n";}
-            | Seleccion                                                         {cout << "Seleccion \n";}
-            | Repeticion                                                        {cout << "Repeticion \n";}
-            | FuncDef                                                           {cout << "FuncDef \n";}
-            | FuncCall                                                          {cout << "FuncCall \n";}
+Inst        : Conversion                                                        {$$ = $1;}
+            | Seleccion                                                         {$$ = $1;}
+            | Repeticion                                                        {$$ = $1;}
+            | FuncDef                                                           {$$ = $1;}
+            | FuncCall                                                          {$$ = $1;}
             | Asignacion                                                        {$$ = $1;}
-            | ArrOp                                                             {cout << "ArrOp \n";}
-            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir")}
-            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer")}
+            | ArrOp                                                             {$$ = $1;}
+            | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
+            | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
+            | Program                                                           {$$ = $1;}
             ;
 
-Conversion  : EFECTIVO OPAR Literal OPAR                                   {cout << "EFECTIVO OPAR Literal OPAR \n";}
-            | DEVALUA OPAR Literal OPAR                                    {cout << "DEVALUA OPAR Literal OPAR \n";}
+Conversion  : EFECTIVO OPAR Exp CPAR                                   {$$ = new EmbededFunc("Efectivo", $3)}
+            | DEVALUA OPAR Exp CPAR                                    {$$ = new EmbededFunc("Devalua", $3)}
             ;
 
-Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {cout << "PORSIA OPAR Exp OPAR Start \n";}
-            | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {cout << "TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK \n";}
+Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {$$ = new Seleccion($3,$5,$6,"Porsia")}
+            | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {$$ = new Tantea($3, $6);}
             ;
 
-Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {cout << "SINO OPAR Exp CPAR Start \n";}
-            | NIMODO Program                                                  {cout << "NIMODO Start \n";}
-            |                                                                 {cout << "FIN Seleccion2 \n";}
+Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {$$ = new Seleccion( $3, $5, $6, "Sino")}
+            | NIMODO Program                                                  {$$ = new Seleccion(NULL, $2, NULL, "Nimodo")}
+            |                                                                 {$$ = NULL;}
             ;
 
-Casos       : Casos CASO OPAR Exp CPAR Program                                {cout << "Casos CASO OPAR Exp CPAR Start \n";}
-            | CASO OPAR Exp CPAR Program                                      {cout << "CASO OPAR Exp CPAR Start \n";}
+Casos       : Casos CASO OPAR Exp CPAR Program                                {$$ = new Caso($1, $4, $6);}
+            | CASO OPAR Exp CPAR Program                                      {$$ = new Caso(NULL, $3, $5);}
             ;
 
-Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {cout << "VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Start \n";}
-            | VACILA OPAR Id IN Exp CPAR Program                                   {cout << "VACILA OPAR Id IN Exp CPAR Start \n";}  
-            | PEGAO OPAR Exp CPAR Program                                          {cout << "PEGAO OPAR Exp CPAR Start \n";} 
+Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {$$ = new Repeticion($3, $5, $7, NULL, $9);}
+            | VACILA OPAR Id IN Exp CPAR Program                                   {$$ = new Repeticion(NULL, $5, NULL, $3, $7);}  
+            | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);} 
             ;
 
-ArrOp       : TAM OPAR Array CPAR                                            {cout << "TAM OPAR Array CPAR \n";}
-            | SITIO OPAR Array CPAR                                          {cout << "SITIO OPAR Array CPAR \n";}
-            | METELE OPAR Array CPAR                                         {cout << "METELE OPAR Array CPAR \n";}
-            | SACALE OPAR Array CPAR                                         {cout << "SACALE OPAR Array CPAR \n";}
-            | VOLTEA OPAR Array CPAR                                         {cout << "VOLTEA OPAR Array CPAR \n";}
-            | TAM OPAR ID CPAR                                               {cout << "TAM OPAR ID CPAR \n";}
-            | SITIO OPAR ID CPAR                                             {cout << "SITIO OPAR ID CPAR \n";}
-            | METELE OPAR ID CPAR                                            {cout << "METELE OPAR ID CPAR \n";}
-            | SACALE OPAR ID CPAR                                            {cout << "SACALE OPAR ID CPAR \n";}
-            | VOLTEA OPAR ID CPAR                                            {cout << "VOLTEA OPAR ID CPAR \n";}
+ArrOp       : TAM OPAR Exp CPAR                                            {$$ = new EmbededFunc("Tam", $3)}
+            | SITIO OPAR Exp CPAR                                          {$$ = new EmbededFunc("Sitio", $3)}
+            | METELE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Metele", $3)}
+            | SACALE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Sacale", $3)}
+            | VOLTEA OPAR Exp CPAR                                         {$$ = new EmbededFunc("Voltea", $3)}
             ;
 
 // // Sobre las funciones
 
-FuncCall    : ID OPAR CPAR                                                  {cout << "ID OPAR CPAR \n";}
-            | ID OPAR Exp CPAR                                              {cout << "ID OPAR Exp CPAR \n";}
+FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3);}
             ;
 
-FuncDef     : CHAMBA Type ID OPAR ParamList CPAR Program                        {cout << "CHAMBA Type ID OPAR ParamList CPAR Start \n";}
-            | CHAMBA NADA ID OPAR ParamList CPAR Program                        {cout << "CHAMBA NADA OPAR ParamList CPAR Start \n";}
+Args        : Args COMMA Exp                                                {$$ = new Params($1, $3);}
+            | Exp                                                           {$$ = new Params(NULL, $1);}
+            |                                                               {$$ = NULL;}
+            ;
+            
+
+FuncDef     : CHAMBA Type Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
+            | CHAMBA NADA Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
             ;
 
-ParamList   : ParamList COMMA Declaration                                   {cout << "ParamList COMMA Declaration \n";}
-            | Declaration                                                   {cout << "Declaration \n";}
-            |                                                               {cout << "Empty Param \n";}
+ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);}
+            | Declaration                                                   {$$ = new Params(NULL, $1)}
+            |                                                               {$$ = NULL}
             ;
 
 %%
@@ -325,7 +325,7 @@ void run_parser(){
 			cout << errorMessage << endl;
 	}
 	
-    cout << root_ast->to_s() << endl;
+    cout << root_ast->to_s(0,0) << endl;
 	// Si hay errores del lexer, imprimirlos
     
     // imprimir_tabla();
@@ -335,8 +335,26 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    run_parser();
-    // run_lexer();
+    if (yyin == false){
+    	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
+    	return 0;
+    }
+
+    if (argc > 2){
+		for (int i = 2; i < argc; i++ ){
+			string arg(argv[i]);
+			if (arg == "-l"){
+				run_lexer();
+			}
+			else if (arg == "-p"){
+				run_parser();
+			}
+		}
+	} else {
+		// por defecto ejecuta el parser
+		run_parser();
+	}
+
     return 0;
 }
 
