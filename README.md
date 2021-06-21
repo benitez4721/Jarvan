@@ -375,7 +375,7 @@ Por ejemplo el siguiente código define una función llamada `mychamba` y un pro
             rescata a * a
  }
 
- Chamba nulo saimeLannister(letra a) {
+ Chamba nada saimeLannister(letra a) {
      a = a + 'chambeando'
  }
  ```

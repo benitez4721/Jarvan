@@ -303,8 +303,6 @@ void run_lexer(){
             isComment = true;
         }
         
-
-
         ntoken = yylex();
 
     }
@@ -341,10 +339,10 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    // if (yyin == false){
-    // 	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
-    // 	return 0;
-    // }
+    if (yyin == false){
+    	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
+    	return 0;
+    }
 
     if (argc > 2){
 		for (int i = 2; i < argc; i++ ){
