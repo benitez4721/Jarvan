@@ -1,0 +1,10 @@
+{
+    vacila (bs i = 1; i < 4; i + 1) {
+        Beticas
+        bs a = 1
+    };
+
+    pegao (a) {
+        a = 1 + 1
+    }
+}
