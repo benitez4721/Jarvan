@@ -79,6 +79,13 @@ class EmbededFunc : public Node {
         string to_s(int tab, int tabAux = 0);
 };
 
+class Rescata : public Node {
+    public:
+        Node * exp;
+        Rescata(Node * exp);
+        string to_s(int tab, int tabAux = 0);
+};
+
 class Caso : public Node {
     public:
         Node * l_casos;

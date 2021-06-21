@@ -5,8 +5,9 @@
     #include<string.h>
     #include <vector>
     #include "ast.h"
-    #include "parser.tab.h"
     #include "definitions.h"
+    #include "table.h"
+    #include "parser.tab.h"
 
     using namespace std;
 
@@ -21,6 +22,7 @@
     extern int yycolumn;
     extern FILE* yyin;
     extern char* yytext;
+    extern sym_table table;
 
     bool error_sintactico = 0;
 
@@ -204,6 +206,7 @@ Inst        : Conversion                                                        
             | ArrOp                                                             {$$ = $1;}
             | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
             | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
+            | RESCATA Exp                                                       {$$ = new Rescata($2)}
             | Program                                                           {$$ = $1;}
             ;
 
@@ -257,6 +260,12 @@ ParamList   : ParamList COMMA Declaration                                   {$$ 
             ;
 
 %%
+
+// void imprimir_tabla(){
+// 	if (!error_sintactico){
+// 		table.print();
+// 	}
+// }
 
 void yyerror (char const *s) {
     cout << "Sintax Error, unexpected: " << yytext << " in row " << yylineno << ", column " << yycolumn-strlen(yytext) << "\n"; 
@@ -320,6 +329,8 @@ void run_parser(){
 	
     cout << root_ast->to_s(0,0) << endl;
 	// Si hay errores del lexer, imprimirlos
+    
+    // imprimir_tabla();
 }
 
 int main(int argc, char *argv[]){

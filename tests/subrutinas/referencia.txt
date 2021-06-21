@@ -1,0 +1,9 @@
+{
+    Chamba bs mychamba(bs ~a){
+        rescata a * a
+    };
+
+    Chamba nada saimeLannister(letra a) {
+        a = a + "chambeando"
+    }
+}
