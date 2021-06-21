@@ -299,8 +299,6 @@ void run_lexer(){
             isComment = true;
         }
         
-
-
         ntoken = yylex();
 
     }
