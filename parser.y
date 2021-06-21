@@ -90,7 +90,7 @@ Start               : Program                                                   
                     ;
 
 Program             :  OBLOCK Body CBLOCK                                           {$$ = new Program($2);}
-                    |  OBLOCK CBLOCK                                                {;}
+                    |  OBLOCK CBLOCK                                                {$$ = new Program(NULL);}
                     ;
 
 Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
