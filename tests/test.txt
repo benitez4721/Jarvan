@@ -1,6 +1,5 @@
 {
-  Beticas
-  bs ~a = 5
-
-  a = &s
+ # Hola faesfeasfjaesknfiansefinasifnseai
+ #ksfnienfiaosenfoians
+ imprimir("hola") #ijnfioesnafoin
 }

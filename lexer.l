@@ -8,8 +8,10 @@
 using namespace std;
 
 
+
 int yycolumn = 1;
-#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+#define YY_USER_ACTION \
+    yylloc.first_line = yylloc.last_line = yylineno; \
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng; \
     yylval.str = strdup(yytext);
@@ -28,7 +30,9 @@ string                   (\".*\")
 {string}                {return STRING;}
 {int}                   {yylval.num = atoi(yytext);return INT;}
 {float}                 {yylval.flot = stof(yytext); return FLOAT;}
-[ \t\n]                  ; 
+[ ]                  ; 
+\t								{yycolumn+= 3;}
+\n								{yycolumn = 1;}
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}
 "devalua"               {return DEVALUA;}
@@ -75,7 +79,7 @@ string                   (\".*\")
 "metele"                {return METELE;}
 "sacale"                {return SACALE;}
 "voltea"                {return VOLTEA;}
-"#"                     {return HASH;}
+(#)(.*?)              {yycolumn = 1;}
 "elda"                  {return ELDA;}
 "coba"                  {return COBA;}
 ","                     {return COMMA;}

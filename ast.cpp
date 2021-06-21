@@ -21,6 +21,9 @@ Program::Program(Node * _body){
    body = _body;
 };
 string Program::to_s(int tab, int tabAux){
+    if(body == NULL){
+        return getTab(tab) + "EmptyBlock\n";
+    }
     return body->to_s(tab);
 };
 
