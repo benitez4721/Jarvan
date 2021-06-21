@@ -2,5 +2,6 @@
   Beticas
   bs ~a = 5
 
-  a = &s
+  a = +!5 $
+                $
 }

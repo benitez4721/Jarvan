@@ -259,7 +259,7 @@ ParamList   : ParamList COMMA Declaration                                   {$$ 
 %%
 
 void yyerror (char const *s) {
-    cout << s << " line: " << yylineno << endl;
+    cout << "Sintax Error, unexpected: " << yytext << " en la fila " << yylineno << ", columna " << yycolumn-strlen(yytext) << "\n"; 
     // fprintf (stderr, "%s%s\n", s);
 }
 
@@ -274,19 +274,15 @@ void run_lexer(){
     while(ntoken) {
         if(row != yylineno){
             row = yylineno;
-            column = 1;
-            yycolumn = 2;
             isComment = false;
         }
-        else{
-            column = yycolumn - yyleng;  
-        }
+
         if(nTokens[ntoken] != "ws" && !isComment){
             if(ntoken == ERROR){
-                errors.push_back(Token(yytext, nTokens[ntoken], yylineno, column));
+                errors.push_back(Token(yytext, nTokens[ntoken], yylineno, yylloc.first_column));
             }
             else{
-                tokens.push_back(Token(yytext, nTokens[ntoken], yylineno, column ));
+                tokens.push_back(Token(yytext, nTokens[ntoken], yylineno, yylloc.first_column));
             }
         }
 
