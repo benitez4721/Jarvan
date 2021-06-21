@@ -4,6 +4,8 @@
     vacila (bs i = 1; i < 4; i + 1) {
         a = a + 1
     };
+    
+    a.b[1] = 2;
 
     pegao (b) {
         a = 1 + 1;

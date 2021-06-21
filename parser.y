@@ -81,7 +81,7 @@
 %token NADA 74
 %token POINT 75
 %token DEREFERENCE 76
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
 %type <program> Program 
 
 %%
@@ -120,13 +120,17 @@ Asignacion          : Lvalue ASIGN Exp                                      {$$ 
                     ;
 
 Lvalue              : ListAccesor                                       {$$ = $1;}
-                    | Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
+                    | Indexing                                            {$$ = $1;}
                     ; 
 
 ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
+                    | ListAccesor POINT Indexing                        {$$ = new ListAccesor($1, $3);}
                     | Id                                                {$$ = new ListAccesor(NULL, $1);}
                     ; 
-                    
+
+Indexing            : Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
+                    ;
+
 Id			        : ID										        {$$ = new Id($1);}
 			        ;
 
@@ -337,10 +341,10 @@ int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
-    if (yyin == false){
-    	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
-    	return 0;
-    }
+    // if (yyin == false){
+    // 	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
+    // 	return 0;
+    // }
 
     if (argc > 2){
 		for (int i = 2; i < argc; i++ ){
