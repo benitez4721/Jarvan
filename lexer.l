@@ -79,7 +79,7 @@ string                   (\".*\")
 "metele"                {return METELE;}
 "sacale"                {return SACALE;}
 "voltea"                {return VOLTEA;}
-"#"                     {return HASH;}
+(#)(.*?)              {yycolumn = 1;}
 "elda"                  {return ELDA;}
 "coba"                  {return COBA;}
 ","                     {return COMMA;}
