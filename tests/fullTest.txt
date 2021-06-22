@@ -1,0 +1,25 @@
+{
+
+  Beticas 
+  qlq a = elda;
+  bs billete;
+  bsf sencillo;
+  letra incial = 'P';
+  Bus rioTuy {
+    bsf pasaje = 11.5;
+    Labia canto = "Lluvia, LLUVIA. Tus besos frios como la lluvia, LLUVIA...";
+    Metro <qlq[10]> asientosLibres = [elda, coba, elda, elda, coba, coba, elda, elda, coba, elda];
+    Metrobus <Labia[1]> pasajeros
+  };
+  bsf ~c
+  
+  # Este es un comentario
+  imprimir(a);
+
+  Chamba qlq pasajero(Labia pasajero) {
+    porsia(rioTuy.pasajeros == "Robelto") {
+      imprimir("El que dejo el pago abierto")
+    }
+  }
+
+}
