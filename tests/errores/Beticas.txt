@@ -1,0 +1,14 @@
+{
+    Beticas
+    bs a;
+    bs a = 1;
+    qlq a
+    Bus diferente {
+        bs enteros;
+        bsf flotantes;
+        qlq booleanos
+    };
+
+    int falso;
+    float verdadero
+}
