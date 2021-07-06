@@ -6,7 +6,7 @@
     #include <vector>
     #include "ast.h"
     #include "definitions.h"
-    #include "table.h"
+    #include "symtable.h"
     #include "parser.tab.h"
 
     using namespace std;
@@ -22,11 +22,10 @@
     extern int yycolumn;
     extern FILE* yyin;
     extern char* yytext;
-    extern sym_table table;
 
-    bool error_sintactico = 0;
 
     Program * root_ast;
+    sym_table st;
 
     void yyerror(const char *s);
 %}
@@ -106,11 +105,13 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     ;
 
 Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
+                                                                            
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
                     | Type POINTER Id                                               {$$ = new Declaration($3, NULL);}
-                    | Type POINTER Init                                               {$$ = new Declaration($3, NULL);}
-                    | Type Id                                                       {$$ = new Declaration($2, NULL);}
+                    | Type POINTER Init                                              {$$ = new Declaration($3, NULL);}
+                    | Type Id                                                       {if(!st.insert(dynamic_cast<Id*>($2)->id, "Variable", new Int())){cout << "ERROR Variable ya decarada" << endl;}; 
+                                                                                        $$ = new Declaration($2, NULL);}
                     ;
 
 Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
@@ -330,6 +331,8 @@ void run_parser(){
 	}
 	
     cout << root_ast->to_s(0,0) << endl;
+    st.print();
+    // cout << st.print() << endl;
 	// Si hay errores del lexer, imprimirlos
     
     // imprimir_tabla();
