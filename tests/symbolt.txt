@@ -1,6 +1,8 @@
 {
     Beticas
     bs a;
-    bs b;
-    bs c;
+    bsf b;
+    letra c;
+    bsf d;
+    Bus a
 }

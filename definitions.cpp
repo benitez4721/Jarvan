@@ -4,6 +4,7 @@
 #include<string>
 #include "definitions.h"
 #include "ast.h"
+#include "symtable.h"
 #include "parser.tab.h"
 #include <map>
 #include <regex>

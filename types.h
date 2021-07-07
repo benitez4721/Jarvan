@@ -13,3 +13,23 @@ class Int : public Type {
     public:
         Int():Type("int"){};
 };
+
+class Float : public Type {
+    public:
+        Float():Type("float"){};
+};
+
+class Char : public Type {
+    public:
+        Char():Type("char"){};
+};
+
+class String : public Type {
+    public:
+        String():Type("str"){};
+};
+
+class Bool : public Type {
+    public:
+        Bool():Type("bool"){};
+};

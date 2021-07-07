@@ -38,6 +38,7 @@
     float flot;
     Node * node;
     Program * program;
+    Type * type;
 }
 
 
@@ -82,6 +83,7 @@
 %token DEREFERENCE 76
 %type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
 %type <program> Program 
+%type <type> Type
 
 %%
 Start               : Program                                                       {root_ast = $1;}
@@ -104,17 +106,18 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
                     ;
 
-Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}
-                                                                            
+Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}                                                                    
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
-                    | Type POINTER Id                                               {$$ = new Declaration($3, NULL);}
-                    | Type POINTER Init                                              {$$ = new Declaration($3, NULL);}
-                    | Type Id                                                       {if(!st.insert(dynamic_cast<Id*>($2)->id, "Variable", new Int())){cout << "ERROR Variable ya decarada" << endl;}; 
-                                                                                        $$ = new Declaration($2, NULL);}
+                    | Type POINTER Id                                               {if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
+                                                                                    $$ = new Declaration($3, NULL);}
+                    | Type POINTER Init                                             {$$ = new Declaration($3, NULL);}
+                    | Type Id                                                       {if(!st.insert(dynamic_cast<Id*>($2)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;}; 
+                                                                                    $$ = new Declaration($2, NULL);}
                     ;
 
-Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
+Init                : Id ASIGN Exp                                          {if(!st.insert(dynamic_cast<Id*>($1)->id, "Variable", )){cout << "ERROR Variable ya declarada" << endl;}
+                                                                            $$ = new Asign($1, $3);}
                     ;
 
 Asignacion          : Lvalue ASIGN Exp                                      {$$ = new Asign($1, $3);}
@@ -139,10 +142,10 @@ ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {$$ = new Lis
                     | OBRACKET Exp CBRACKET                             {$$ = new ListIndexing(NULL, $2)}
                     ;
 
-Type                : BS                                                    {;}
-                    | BSF                                                   {;}
-                    | LABIA                                                 {;}
-                    | LETRA                                                 {;}                                                
+Type                : BS                                                    {$$ = new Int();}
+                    | BSF                                                   {$$ = new Float();}
+                    | LABIA                                                 {$$ = new String();}
+                    | LETRA                                                 {$$ = new Char();}                                                
                     | QLQ                                                   {;}
                     | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
                     ;

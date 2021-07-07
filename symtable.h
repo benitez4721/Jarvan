@@ -23,7 +23,7 @@ class table_element {
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 		void print(){
-			cout << "SCOPE: " << scope;
+			cout << "SCOPE: " << scope << " CATEGORY: " << category;
 		}
 	
 };

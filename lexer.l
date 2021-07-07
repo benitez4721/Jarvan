@@ -4,6 +4,7 @@
 #include <string.h>
 #include<iostream>
 #include "ast.h"
+#include "symtable.h"
 #include "parser.tab.h"
 using namespace std;
 
