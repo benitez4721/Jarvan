@@ -94,8 +94,8 @@ Program             :  OBLOCK Body CBLOCK                                       
                     |  OBLOCK CBLOCK                                                {$$ = new Program(NULL);}
                     ;
 
-Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
-                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
+Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3); st.new_scope();}
+                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL); st.new_scope();}
                     | InstList                                                            {$$ = new Body(NULL, $1);}
                     ;
                     ;
@@ -107,7 +107,8 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     ;
 
 Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}                                                                    
-                    | BUS Id OBLOCK DeclarationList CBLOCK                          {$$ = new Declaration($2, $4);}
+                    | BUS Id OBLOCK DeclarationList CBLOCK                          {
+                                                                                    $$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
                     | Type POINTER Id                                               {if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
                                                                                     $$ = new Declaration($3, NULL);}
@@ -116,8 +117,7 @@ Declaration         : Type Init                                                 
                                                                                     $$ = new Declaration($2, NULL);}
                     ;
 
-Init                : Id ASIGN Exp                                          {if(!st.insert(dynamic_cast<Id*>($1)->id, "Variable", )){cout << "ERROR Variable ya declarada" << endl;}
-                                                                            $$ = new Asign($1, $3);}
+Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
                     ;
 
 Asignacion          : Lvalue ASIGN Exp                                      {$$ = new Asign($1, $3);}

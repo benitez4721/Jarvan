@@ -3,6 +3,5 @@
     bs a;
     bsf b;
     letra c;
-    bsf d;
-    Bus a
+    bsf d
 }

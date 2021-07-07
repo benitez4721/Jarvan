@@ -41,6 +41,12 @@ class sym_table {
 		int new_scope(){
 			last_scope++;
 			stack.push_back(last_scope);
+
+			for (size_t i = 0; i < stack.size(); i++)
+			{
+				cout << stack[i];
+			}
+
 			return last_scope;
 		}
 
@@ -110,6 +116,7 @@ class sym_table {
 		// }
 
 		bool insert(string id, string category, Type * type ){
+
 			if(table.find(id) == table.end()){
 				table[id];
 			}
@@ -117,6 +124,8 @@ class sym_table {
 				// std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
 				return false;	
 			}  
+
+			// cout << "Insertando " << id << " en el scope: " << stack.back();
 
 			table[id].push_front(new table_element(id, category, stack.back(),type));
 			return true;
