@@ -1,7 +1,5 @@
 {
     Beticas
     bs a;
-    bsf b;
-    letra c;
-    bsf d
+    bsf b;bs a;
 }

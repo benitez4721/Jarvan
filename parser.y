@@ -13,15 +13,17 @@
 
     vector<Token> tokens;
     vector<Token> errors;
+    vector<string> st_errors;
 
     #define YYDEBUG 1
 
-    extern int yylex();
+    extern int yylex(void);
     extern int yylineno;
     extern int yyleng;
     extern int yycolumn;
     extern FILE* yyin;
     extern char* yytext;
+    void redeclared_variable(string id);
 
 
     Program * root_ast;
@@ -113,8 +115,11 @@ Declaration         : Type Init                                                 
                     | Type POINTER Id                                               {if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
                                                                                     $$ = new Declaration($3, NULL);}
                     | Type POINTER Init                                             {$$ = new Declaration($3, NULL);}
-                    | Type Id                                                       {if(!st.insert(dynamic_cast<Id*>($2)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;}; 
-                                                                                    $$ = new Declaration($2, NULL);}
+                    | Type Id                                                       {
+                                                                                        string id = dynamic_cast<Id*>($2)->id; 
+                                                                                        if(!st.insert(id, "Variable", $1)){redeclared_variable(id);}; 
+                                                                                        $$ = new Declaration($2, NULL);
+                                                                                    }
                     ;
 
 Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
@@ -280,6 +285,11 @@ void yyerror (char const *s) {
     // fprintf (stderr, "%s%s\n", s);
 }
 
+void redeclared_variable(string id){
+    string error = "Error: redeclared variable " + id + " at line " + to_string(yylineno) + ", column " + to_string(yycolumn) + "\n";
+    st_errors.push_back(error);
+}
+
 void run_lexer(){
     cout << "executing lexer" << endl << endl;
     int ntoken;
@@ -335,6 +345,11 @@ void run_parser(){
 	
     cout << root_ast->to_s(0,0) << endl;
     st.print();
+    if(st_errors.size() > 0){
+        for(int i = 0; i <st_errors.size(); i++){
+            cout << st_errors[i];
+        }
+    }
     // cout << st.print() << endl;
 	// Si hay errores del lexer, imprimirlos
     
