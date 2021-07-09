@@ -23,7 +23,7 @@
     extern int yycolumn;
     extern FILE* yyin;
     extern char* yytext;
-    void redeclared_variable(string id);
+    void redeclared_variable(string id, int line, int col);
 
 
     Program * root_ast;
@@ -117,7 +117,7 @@ Declaration         : Type Init                                                 
                     | Type POINTER Init                                             {$$ = new Declaration($3, NULL);}
                     | Type Id                                                       {
                                                                                         string id = dynamic_cast<Id*>($2)->id; 
-                                                                                        if(!st.insert(id, "Variable", $1)){redeclared_variable(id);}; 
+                                                                                        if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, NULL);
                                                                                     }
                     ;
@@ -285,8 +285,8 @@ void yyerror (char const *s) {
     // fprintf (stderr, "%s%s\n", s);
 }
 
-void redeclared_variable(string id){
-    string error = "Error: redeclared variable " + id + " at line " + to_string(yylineno) + ", column " + to_string(yycolumn) + "\n";
+void redeclared_variable(string id, int line, int col){
+    string error = "Error: redeclared variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + "\n";
     st_errors.push_back(error);
 }
 

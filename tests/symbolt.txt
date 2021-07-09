@@ -1,5 +1,6 @@
 {
     Beticas
     bs a;
-    bsf b;bs a;
+    bsf b;
+    bs a
 }

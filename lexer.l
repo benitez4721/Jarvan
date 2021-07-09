@@ -1,3 +1,5 @@
+%option yylineno
+%option noyywrap
 %{
 
 #include<stdlib.h>
@@ -24,7 +26,6 @@ float                     ([0-9]+\.[0-9]+)
 char                    '(.|\\n|\\t)'
 id                      [a-zA-Z][a-zA-Z0-9_]*
 string                   (\".*\")
-%option yylineno
 
 %%
 {char}                  {return CHAR;}
@@ -100,7 +101,3 @@ string                   (\".*\")
 {id}                    {return ID;}
 .                       {return ERROR;}
 %%
-
-int yywrap(void){
-    return 1;
-}
