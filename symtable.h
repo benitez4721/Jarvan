@@ -36,9 +36,10 @@ class sym_table {
 		vector<int> stack;
 		int last_scope;
 	public:
-		sym_table() : last_scope(0) {stack.push_back(last_scope);}
+		sym_table() : last_scope(0) {stack.push_back(0);}
 
 		int new_scope(){
+
 			last_scope++;
 			stack.push_back(last_scope);
 
@@ -120,7 +121,8 @@ class sym_table {
 			if(table.find(id) == table.end()){
 				table[id];
 			}
-			if (lookup(id, stack.back()) != NULL){
+			table_element * e = lookup(id, stack.back());
+			if (e != NULL && e->scope == stack.back() ){
 				// std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
 				return false;	
 			}  

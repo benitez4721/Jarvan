@@ -1,6 +1,19 @@
 {
     Beticas
-    bs a;
-    bsf b;
-    bs a
+    bs ~ a = 5;
+    bs b = 8
+    {
+        Beticas
+        bs z
+        {
+            Beticas
+            bs z
+            {
+                Beticas
+                bs z;
+                bs b;
+                bs z
+            }
+        }
+    } 
 }

@@ -83,7 +83,7 @@
 %token NADA 74
 %token POINT 75
 %token DEREFERENCE 76
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion Chamba
 %type <program> Program 
 %type <type> Type
 
@@ -92,12 +92,16 @@ Start               : Program                                                   
                     | 
                     ;
 
-Program             :  OBLOCK Body CBLOCK                                           {$$ = new Program($2);}
+Program             :  OScope Body CScope                                           {$$ = new Program($2);}
                     |  OBLOCK CBLOCK                                                {$$ = new Program(NULL);}
                     ;
 
-Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3); st.new_scope();}
-                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL); st.new_scope();}
+OScope              : OBLOCK                                                        {st.new_scope();}
+
+CScope              : CBLOCK                                                        {st.exit_scope()}
+
+Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
+                    | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
                     | InstList                                                            {$$ = new Body(NULL, $1);}
                     ;
                     ;
@@ -108,13 +112,22 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     | Declaration                                                   {$$ = new DeclarationList(NULL, $1);} 
                     ;
 
-Declaration         : Type Init                                                     {$$ = new Declaration($2, NULL);}                                                                    
+Declaration         : Type Init                                                     {
+    
+                                                                                        Asign * asign = dynamic_cast<Asign*>($2);
+                                                                                        string id = dynamic_cast<Id*>(asign->id)->id;
+                                                                                        if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($2, NULL);}                                                                    
                     | BUS Id OBLOCK DeclarationList CBLOCK                          {
                                                                                     $$ = new Declaration($2, $4);}
                     | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
                     | Type POINTER Id                                               {if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
                                                                                     $$ = new Declaration($3, NULL);}
-                    | Type POINTER Init                                             {$$ = new Declaration($3, NULL);}
+                    | Type POINTER Init                                             {
+                                                                                        Asign * asign = dynamic_cast<Asign*>($3);
+                                                                                        string id = dynamic_cast<Id*>(asign->id)->id;
+                                                                                        if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($3, NULL);}
                     | Type Id                                                       {
                                                                                         string id = dynamic_cast<Id*>($2)->id; 
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
@@ -263,9 +276,19 @@ Args        : Args COMMA Exp                                                {$$ 
             ;
             
 
-FuncDef     : CHAMBA Type Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
+FuncDef     : Chamba OPAR ParamList CPAR Program                        {
+                                                                                    $$ = new Chamba($1, $3, $5);
+                                                                                    st.exit_scope();
+                                                                                }
             | CHAMBA NADA Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
             ;
+            
+Chamba  : CHAMBA Type Id                                    {
+                                                                string id = dynamic_cast<Id*>($3)->id; 
+                                                                if(!st.insert(id, "Function", $2)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                st.new_scope();
+                                                                $$=$3;
+                                                            }
 
 ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);}
             | Declaration                                                   {$$ = new Params(NULL, $1)}
