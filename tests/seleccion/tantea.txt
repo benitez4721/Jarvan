@@ -1,5 +1,7 @@
 {
-    tantea (i) {
+    Beticas
+    bs i
+    tantea (bs i) {
         caso (t > 4) {
         }
         caso (t < 5) {

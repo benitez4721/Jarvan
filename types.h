@@ -33,3 +33,8 @@ class Bool : public Type {
     public:
         Bool():Type("bool"){};
 };
+
+class Void : public Type {
+    public: 
+        Void():Type("void"){};
+};

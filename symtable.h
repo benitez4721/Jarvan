@@ -43,10 +43,10 @@ class sym_table {
 			last_scope++;
 			stack.push_back(last_scope);
 
-			for (size_t i = 0; i < stack.size(); i++)
-			{
-				cout << stack[i];
-			}
+			// for (size_t i = 0; i < stack.size(); i++)
+			// {
+			// 	cout << stack[i];
+			// }
 
 			return last_scope;
 		}
@@ -71,7 +71,7 @@ class sym_table {
 			stack.pop_back();
 		}
 
-		table_element * lookup(std::string x, int scope){
+		table_element * lookup(std::string x){
 			table_element * pervasive = NULL;
 			table_element * best = NULL;
 
@@ -121,7 +121,7 @@ class sym_table {
 			if(table.find(id) == table.end()){
 				table[id];
 			}
-			table_element * e = lookup(id, stack.back());
+			table_element * e = lookup(id);
 			if (e != NULL && e->scope == stack.back() ){
 				// std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
 				return false;	

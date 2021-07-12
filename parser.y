@@ -24,6 +24,7 @@
     extern FILE* yyin;
     extern char* yytext;
     void redeclared_variable(string id, int line, int col);
+    void checkIfDef(string id, int line, int col);
 
 
     Program * root_ast;
@@ -83,7 +84,7 @@
 %token NADA 74
 %token POINT 75
 %token DEREFERENCE 76
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion Chamba
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion 
 %type <program> Program 
 %type <type> Type
 
@@ -113,16 +114,25 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
                     ;
 
 Declaration         : Type Init                                                     {
-    
                                                                                         Asign * asign = dynamic_cast<Asign*>($2);
                                                                                         string id = dynamic_cast<Id*>(asign->id)->id;
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
-                                                                                        $$ = new Declaration($2, NULL);}                                                                    
-                    | BUS Id OBLOCK DeclarationList CBLOCK                          {
-                                                                                    $$ = new Declaration($2, $4);}
-                    | BULULU Id OBLOCK DeclarationList CBLOCK                       {$$ = new Declaration($2, $4);}
-                    | Type POINTER Id                                               {if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
-                                                                                    $$ = new Declaration($3, NULL);}
+                                                                                        $$ = new Declaration($2, NULL);
+                                                                                    }                                                                    
+                    | BUS Id OScope DeclarationList CScope                          { 
+                                                                                        string id = dynamic_cast<Id*>($2)->id; 
+                                                                                        if(!st.insert(id, "Struct", NULL)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($2, $4);
+                                                                                    }
+                    | BULULU Id OScope DeclarationList CScope                       {
+                                                                                        string id = dynamic_cast<Id*>($2)->id; 
+                                                                                        if(!st.insert(id, "Union", NULL)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($2, $4);
+                                                                                    }
+                    | Type POINTER Id                                               {
+                                                                                        if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
+                                                                                        $$ = new Declaration($3, NULL);
+                                                                                    }
                     | Type POINTER Init                                             {
                                                                                         Asign * asign = dynamic_cast<Asign*>($3);
                                                                                         string id = dynamic_cast<Id*>(asign->id)->id;
@@ -147,7 +157,10 @@ Lvalue              : ListAccesor                                       {$$ = $1
 
 ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
                     | ListAccesor POINT Indexing                        {$$ = new ListAccesor($1, $3);}
-                    | Id                                                {$$ = new ListAccesor(NULL, $1);}
+                    | Id                                                {
+                                                                            string id = dynamic_cast<Id*>($1)->id; 
+                                                                            checkIfDef(id, @$.first_line, @$.first_column);$$ = new ListAccesor(NULL, $1);
+                                                                        }
                     ; 
 
 Indexing            : Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
@@ -164,7 +177,7 @@ Type                : BS                                                    {$$ 
                     | BSF                                                   {$$ = new Float();}
                     | LABIA                                                 {$$ = new String();}
                     | LETRA                                                 {$$ = new Char();}                                                
-                    | QLQ                                                   {;}
+                    | QLQ                                                   {$$ = new Bool();}
                     | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
                     ;
 
@@ -241,7 +254,12 @@ Conversion  : EFECTIVO OPAR Exp CPAR                                   {$$ = new
             ;
 
 Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {$$ = new Seleccion($3,$5,$6,"Porsia")}
-            | TANTEA OPAR Id CPAR OBLOCK Casos CBLOCK                       {$$ = new Tantea($3, $6);}
+            | TANTEA OPar Type Id CPAR OBLOCK Casos CBLOCK                  {
+                                                                                string id = dynamic_cast<Id*>($4)->id; 
+                                                                                if(!st.insert(id, "Variable", $3)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                $$ = new Tantea($4, $7);
+                                                                                st.exit_scope()
+                                                                            }
             ;
 
 Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {$$ = new Seleccion( $3, $5, $6, "Sino")}
@@ -253,8 +271,13 @@ Casos       : Casos CASO OPAR Exp CPAR Program                                {$
             | CASO OPAR Exp CPAR Program                                      {$$ = new Caso(NULL, $3, $5);}
             ;
 
-Repeticion  : VACILA OPAR Declaration SEMICOLON Exp SEMICOLON Exp CPAR Program     {$$ = new Repeticion($3, $5, $7, NULL, $9);}
-            | VACILA OPAR Id IN Exp CPAR Program                                   {$$ = new Repeticion(NULL, $5, NULL, $3, $7);}  
+Repeticion  : VACILA OPar Declaration SEMICOLON Exp SEMICOLON Exp CPAR OBLOCK Body CScope       {$$ = new Repeticion($3, $5, $7, NULL, $10);}
+            | VACILA OPar Type Id IN Exp CPAR OBLOCK Body CBLOCK                                     {
+                                                                                                    string id = dynamic_cast<Id*>($4)->id; 
+                                                                                                    if(!st.insert(id, "Iterator", NULL)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                                    $$ = new Repeticion(NULL, $6, NULL, $4, $9);
+                                                                                                    st.exit_scope()
+                                                                                                }  
             | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);} 
             ;
 
@@ -276,20 +299,21 @@ Args        : Args COMMA Exp                                                {$$ 
             ;
             
 
-FuncDef     : Chamba OPAR ParamList CPAR Program                        {
-                                                                                    $$ = new Chamba($1, $3, $5);
-                                                                                    st.exit_scope();
+FuncDef     : CHAMBA Type Id OPar ParamList CPAR OBLOCK Body CScope             {
+                                                                                    string id = dynamic_cast<Id*>($3)->id; 
+                                                                                    if(!st.insert(id, "Func", $2)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                    $$ = new Chamba($3, $5, $8);
                                                                                 }
-            | CHAMBA NADA Id OPAR ParamList CPAR Program                        {$$ = new Chamba($3, $5, $7)}
+            | CHAMBA NADA Id OPAR ParamList CPAR Program                {
+
+                                                                            string id = dynamic_cast<Id*>($3)->id; 
+                                                                            if(!st.insert(id, "Proc", new Void())){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                            $$ = new Chamba($3, $5, $7)
+                                                                        }
             ;
             
-Chamba  : CHAMBA Type Id                                    {
-                                                                string id = dynamic_cast<Id*>($3)->id; 
-                                                                if(!st.insert(id, "Function", $2)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
-                                                                st.new_scope();
-                                                                $$=$3;
-                                                            }
-
+OPar        : OPAR                                                      {st.new_scope()}
+            
 ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);}
             | Declaration                                                   {$$ = new Params(NULL, $1)}
             |                                                               {$$ = NULL}
@@ -304,13 +328,20 @@ ParamList   : ParamList COMMA Declaration                                   {$$ 
 // }
 
 void yyerror (char const *s) {
-    cout << "Sintax Error, unexpected: " << yytext << " in row " << yylineno << ", column " << yycolumn-strlen(yytext) << "\n"; 
+    cout << "Sintax Error, unexpected: " << yytext << " in row " << yylineno << ", column " << yycolumn-strlen(yytext) << ".\n"; 
     // fprintf (stderr, "%s%s\n", s);
 }
 
 void redeclared_variable(string id, int line, int col){
-    string error = "Error: redeclared variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + "\n";
+    string error = "Error: redeclared variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + ".\n";
     st_errors.push_back(error);
+}
+
+void checkIfDef(string id, int line, int col){
+    if(!st.lookup(id)){
+        string error = "Error: variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + ", has not been declared."+ "\n";
+        st_errors.push_back(error);
+    }
 }
 
 void run_lexer(){
@@ -366,12 +397,14 @@ void run_parser(){
 			cout << errorMessage << endl;
 	}
 	
-    cout << root_ast->to_s(0,0) << endl;
-    st.print();
+    // cout << root_ast->to_s(0,0) << endl;
     if(st_errors.size() > 0){
         for(int i = 0; i <st_errors.size(); i++){
             cout << st_errors[i];
         }
+    }else{
+
+        st.print();
     }
     // cout << st.print() << endl;
 	// Si hay errores del lexer, imprimirlos
