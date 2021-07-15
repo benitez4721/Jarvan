@@ -1,4 +1,7 @@
 
+
+#ifndef TYPES_H
+#define TYPES_H
 #include <string>
 using namespace std;
 
@@ -38,3 +41,5 @@ class Void : public Type {
     public: 
         Void():Type("void"){};
 };
+
+#endif

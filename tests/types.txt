@@ -1,0 +1,5 @@
+{
+    Beticas
+    bs a = 5;
+    bs b = elda
+}

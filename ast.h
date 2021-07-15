@@ -1,4 +1,5 @@
 #include <string>
+#include "types.h" 
 
 using namespace std;
 
@@ -7,7 +8,11 @@ string getTab(int tab);
 
 class Node {
     public:
+        Type *type;
         virtual string to_s(int tab, int tabAux = 0) { };
+        void setType(Type *_type=NULL) {
+            type = _type;
+         };
 };
 
 class Unary : public Node {
@@ -181,6 +186,9 @@ class LiteralBool : public Node {
     public: 
         string value;
         LiteralBool(string value);
+        void setType(Type *type){
+           Node::setType(type);
+        };
         string to_s(int tab, int tabAux = 0);
 
 };
@@ -213,6 +221,9 @@ class LiteralInt : public Node {
     public: 
         int value;
         LiteralInt(int value);
+        void setType(Type *type){
+            Node::setType(type);
+        };
         string to_s(int tab, int tabAux = 0);
 
 };
@@ -236,6 +247,9 @@ class Id : public Node {
     public:
         string id;
         Id(string id);
+        void setType(Type *_type){
+            Node::setType(_type);
+        };
         string to_s(int tab, int tabAux = 0);
 };
 

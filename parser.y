@@ -14,6 +14,7 @@
     vector<Token> tokens;
     vector<Token> errors;
     vector<string> st_errors;
+    vector<string> type_errors;
 
     #define YYDEBUG 1
 
@@ -24,7 +25,8 @@
     extern FILE* yyin;
     extern char* yytext;
     void redeclared_variable(string id, int line, int col);
-    void checkIfDef(string id, int line, int col);
+    bool checkIfDef(string id, int line, int col);
+    void checkAsignType(Type * a, Type * b);
 
 
     Program * root_ast;
@@ -116,6 +118,8 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
 Declaration         : Type Init                                                     {
                                                                                         Asign * asign = dynamic_cast<Asign*>($2);
                                                                                         string id = dynamic_cast<Id*>(asign->id)->id;
+                                                                                        Node *exp = asign->exp;
+                                                                                        cout << exp->type->name << endl;
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, NULL);
                                                                                     }                                                                    
@@ -139,7 +143,9 @@ Declaration         : Type Init                                                 
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($3, NULL);}
                     | Type Id                                                       {
-                                                                                        string id = dynamic_cast<Id*>($2)->id; 
+                                                                                        Id *idNode = dynamic_cast<Id*>($2); 
+                                                                                        string id = idNode->id;
+                                                                                        idNode->setType($1);
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, NULL);
                                                                                     }
@@ -187,12 +193,12 @@ ArrayType           : METRO                                                 {;}
 
 // Literals
 
-Literal             : INT                                                   {$$ = new LiteralInt($1);}                                                   
+Literal             : INT                                                   {$$ = new LiteralInt($1); $$->setType(new Int())}                                                   
                     | FLOAT                                                 {$$ = new LiteralFloat($1);}
                     | CHAR                                                  {$$ = new LiteralChar($1);}
                     | STRING                                                {$$ = new LiteralStr($1);}                                             
-                    | ELDA                                                  {$$ = new LiteralBool("elda");}
-                    | COBA                                                  {$$ = new LiteralBool("coba");}
+                    | ELDA                                                  {$$ = new LiteralBool("elda");$$->setType(new Bool())}
+                    | COBA                                                  {$$ = new LiteralBool("coba");$$->setType(new Bool())}
                     | Array                                                 {$$ = new Array($1)}
                     ;
 
@@ -337,13 +343,20 @@ void redeclared_variable(string id, int line, int col){
     st_errors.push_back(error);
 }
 
-void checkIfDef(string id, int line, int col){
+bool checkIfDef(string id, int line, int col){
     if(!st.lookup(id)){
         string error = "Error: variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + ", has not been declared."+ "\n";
         st_errors.push_back(error);
+        return false;
     }
+    return true;
 }
 
+void checkAsignType(Type * a, Type * b, int line, int col){
+    if(a->name != b->name){
+        string error = "TypeError: cannot asign variable of type '" + b->name + "' to variable of type '" + a->name + "at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    }
+}
 void run_lexer(){
     cout << "executing lexer" << endl << endl;
     int ntoken;
