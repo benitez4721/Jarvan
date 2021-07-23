@@ -1,22 +1,11 @@
 {
     Beticas
-    qlq ~ a = 5;
     bs pasaje;
     bs z;
-    bs i = 5;
-    Bus rioTuy {
-        bsf pasaje = 11.5;
-        Labia canto = "Lluvia, LLUVIA. Tus besos frios como la lluvia, LLUVIA...";
-        Metro <qlq[10]> asientosLibres = [elda, coba, elda, elda, coba, coba, elda, elda, coba, elda];
-        Metrobus <Labia[1]> pasajeros
-    }
+    bs i = 5
 
-    Chamba bs test (qlq j){
-        porsia(j){
-            imprimir(j)
-        };
-        test(eld)
-    }
+    a = 5
+    
 
 
 }

@@ -131,6 +131,9 @@ class Array : public Node {
         Node * l_array;
         Array(Node * l_array);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ArrayList : public Node {
@@ -139,6 +142,9 @@ class ArrayList : public Node {
         Node * exp;
         ArrayList(Node * l_exp, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Indexing : public Node {
@@ -147,6 +153,9 @@ class Indexing : public Node {
         Node * l_index;
         Indexing(Node * id, Node * l_index);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ListIndexing : public Node {
@@ -155,6 +164,9 @@ class ListIndexing : public Node {
         Node * exp;
         ListIndexing(Node * l_index, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ListAccesor : public Node {
@@ -163,6 +175,9 @@ class ListAccesor : public Node {
         Node * accesor;
         ListAccesor(Node * l_accesor, Node * accesor);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Accesor : public Node{
@@ -241,6 +256,9 @@ class Asign : public Node {
         Node *exp;
         Asign(Node * id, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Id : public Node {

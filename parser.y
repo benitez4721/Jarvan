@@ -25,8 +25,9 @@
     extern FILE* yyin;
     extern char* yytext;
     void redeclared_variable(string id, int line, int col);
-    bool checkIfDef(string id, int line, int col);
-    void checkAsignType(Type * a, Type * b);
+    Type * checkIfDef(string id, int line, int col);
+    void checkAsignType(Node * a, Node * b, int line, int col);
+    Type * checkAritType(Node * a, Node * b, string op, int line, int col);
 
 
     Program * root_ast;
@@ -117,10 +118,12 @@ DeclarationList     : DeclarationList SEMICOLON Declaration                     
 
 Declaration         : Type Init                                                     {
                                                                                         Asign * asign = dynamic_cast<Asign*>($2);
-                                                                                        string id = dynamic_cast<Id*>(asign->id)->id;
+                                                                                        Id * idNode =dynamic_cast<Id*>(asign->id); 
+                                                                                        idNode->setType($1);
+                                                                                        string id = idNode->id;
                                                                                         Node *exp = asign->exp;
-                                                                                        cout << exp->type->name << endl;
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        checkAsignType(idNode, exp, @$.first_line, @$.first_column);
                                                                                         $$ = new Declaration($2, NULL);
                                                                                     }                                                                    
                     | BUS Id OScope DeclarationList CScope                          { 
@@ -151,10 +154,10 @@ Declaration         : Type Init                                                 
                                                                                     }
                     ;
 
-Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3);}
+Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3); }
                     ;
 
-Asignacion          : Lvalue ASIGN Exp                                      {$$ = new Asign($1, $3);}
+Asignacion          : Lvalue ASIGN Exp                                      {checkAsignType($1, $3, @$.first_line, @$.first_column);$$ = new Asign($1, $3);}
                     ;
 
 Lvalue              : ListAccesor                                       {$$ = $1;}
@@ -165,7 +168,9 @@ ListAccesor         : ListAccesor POINT Id                              {$$ = ne
                     | ListAccesor POINT Indexing                        {$$ = new ListAccesor($1, $3);}
                     | Id                                                {
                                                                             string id = dynamic_cast<Id*>($1)->id; 
-                                                                            checkIfDef(id, @$.first_line, @$.first_column);$$ = new ListAccesor(NULL, $1);
+                                                                            Type * type = checkIfDef(id, @$.first_line, @$.first_column);
+                                                                            $$ = new ListAccesor(NULL, $1);
+                                                                            $$->setType(type)
                                                                         }
                     ; 
 
@@ -194,9 +199,9 @@ ArrayType           : METRO                                                 {;}
 // Literals
 
 Literal             : INT                                                   {$$ = new LiteralInt($1); $$->setType(new Int())}                                                   
-                    | FLOAT                                                 {$$ = new LiteralFloat($1);}
-                    | CHAR                                                  {$$ = new LiteralChar($1);}
-                    | STRING                                                {$$ = new LiteralStr($1);}                                             
+                    | FLOAT                                                 {$$ = new LiteralFloat($1); $$->setType(new Float())}
+                    | CHAR                                                  {$$ = new LiteralChar($1); $$->setType(new Char())}
+                    | STRING                                                {$$ = new LiteralStr($1); $$->setType(new String())}                                             
                     | ELDA                                                  {$$ = new LiteralBool("elda");$$->setType(new Bool())}
                     | COBA                                                  {$$ = new LiteralBool("coba");$$->setType(new Bool())}
                     | Array                                                 {$$ = new Array($1)}
@@ -209,9 +214,9 @@ List                : Exp                                               {$$ = ne
                     | List COMMA Exp                                    {$$ = new ArrayList($1, $3);}                                             
                     ;
 
-Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2);}
+Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2); $$->setType($2->type)}
 
-            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+");}
+            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+"); $$->setType(checkAritType($1, $3, "+", @$.first_line, @$.first_column))}
             | Exp MINUS Exp                                                 {$$ = new BinaryExp($1, $3, "-");}
             | Exp MULT Exp                                                  {$$ = new BinaryExp($1, $3, "*");}
             | Exp DIV Exp                                                   {$$ = new BinaryExp($1, $3, "/");}
@@ -343,19 +348,50 @@ void redeclared_variable(string id, int line, int col){
     st_errors.push_back(error);
 }
 
-bool checkIfDef(string id, int line, int col){
-    if(!st.lookup(id)){
+Type * checkIfDef(string id, int line, int col){
+    table_element * symbol = st.lookup(id);
+    if(!symbol){
         string error = "Error: variable " + id + " at line " + to_string(line) + ", column " + to_string(col) + ", has not been declared."+ "\n";
         st_errors.push_back(error);
-        return false;
+        return new Type_Error();
     }
-    return true;
+    return symbol->type;
 }
 
-void checkAsignType(Type * a, Type * b, int line, int col){
-    if(a->name != b->name){
-        string error = "TypeError: cannot asign variable of type '" + b->name + "' to variable of type '" + a->name + "at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+void checkAsignType(Node * a, Node * b, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    if(nameA != nameB){
+        if(nameA != "type_error" && nameB != "type_error"){
+            string error = "TypeError: cannot asign variable of type '" + nameB + "' to variable of type '" + nameA + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+            st_errors.push_back(error);
+        }
     }
+}
+
+Type * checkAritType(Node * a, Node * b, string op, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    string error = "TypeError: cannot use operator '"+ op + "' with types '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if(!(nameA == "int" || nameA == "float" || nameA == "char" || nameA == "str")){
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    if(!(nameB == "int" || nameB == "float" || nameB == "char" || nameB == "str")){
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    if((nameA == "char" && nameB =="str") ||(nameB == "char" && nameA == "str")){
+        return new String();
+    }
+    if(nameA != nameB){
+        st_errors.push_back(error);
+        return new Type_Error;
+    }
+    return a->type;
 }
 void run_lexer(){
     cout << "executing lexer" << endl << endl;

@@ -42,4 +42,9 @@ class Void : public Type {
         Void():Type("void"){};
 };
 
+class Type_Error: public Type {
+    public: 
+        Type_Error():Type("type_error"){};
+};
+
 #endif

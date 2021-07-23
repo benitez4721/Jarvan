@@ -1,5 +1,9 @@
 {
     Beticas
-    bs a = 5;
-    bs b = elda
+    bs a;
+    qlq b   
+
+    a = elda + (5 + c )
+
+
 }
