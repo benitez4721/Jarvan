@@ -76,7 +76,6 @@ string                   (\".*\")
 ")"                     {return CPAR;}
 "["                     {return OBRACKET;}
 "]"                     {return CBRACKET;}
-"tam"                   {return TAM;}
 "sitio"                 {return SITIO;}
 "metele"                {return METELE;}
 "sacale"                {return SACALE;}

@@ -10,6 +10,21 @@ using namespace std;
 
 enum elem_tipes {VARIABLE, FUNCTION};
 
+class extra_info{
+	public:
+		extra_info(){};
+		virtual ~extra_info() = default;
+};
+
+class extra_info_func : public extra_info {
+	public :
+		int child_scope;
+		int numOfArgs;
+		vector<Type*> args_types;
+		extra_info_func(int na, vector<Type*> at, int cs = 0):
+			extra_info(), child_scope(cs), numOfArgs(na), args_types(at){};
+};
+
 /* Elementos de la tabla de simbolos, despues se expandira */
 class table_element {
 	public:
@@ -17,13 +32,15 @@ class table_element {
 		string category;
 		int scope;
 		Type * type;
+		extra_info * ef;
 
-		table_element(string i, string c , int s, Type * t): id(i),category(c), scope(s), type(t){};
+
+		table_element(string i, string c , int s, Type * t, extra_info * _ef): id(i),category(c), scope(s), type(t), ef(_ef){};
 
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 		void print(){
-			cout << "SCOPE: " << scope << " CATEGORY: " << category;
+			cout << "SCOPE: " << scope << " CATEGORY: " << category << " Type: " << type->name;
 		}
 	
 };
@@ -36,7 +53,10 @@ class sym_table {
 		vector<int> stack;
 		int last_scope;
 	public:
-		sym_table() : last_scope(0) {stack.push_back(0);}
+		sym_table() : last_scope(0) {
+			stack.push_back(0);
+			insert("tam", "func", new Int(),new extra_info_func(1, {new GenericArray()}) );
+		};
 
 		int new_scope(){
 
@@ -116,7 +136,7 @@ class sym_table {
 		// 	return NULL;
 		// }
 
-		bool insert(string id, string category, Type * type ){
+		bool insert(string id, string category, Type * type, extra_info* ef = NULL ){
 
 			if(table.find(id) == table.end()){
 				table[id];
@@ -129,7 +149,7 @@ class sym_table {
 
 			// cout << "Insertando " << id << " en el scope: " << stack.back();
 
-			table[id].push_front(new table_element(id, category, stack.back(),type));
+			table[id].push_front(new table_element(id, category, stack.back(),type, ef));
 			return true;
 		}
 
@@ -138,13 +158,13 @@ class sym_table {
 			map<string, deque<table_element*>>::iterator it;
 			for(it = table.begin(); it != table.end(); it++){
 
-		    	std::cout << "Variable: " << it->first << " [";
+		    	std::cout << "Symbol: " << it->first << endl << '\t' << "[" << endl << "\t\t";
 		    	for (auto e : it->second) {
 					e->print();
 					if (e != it->second.back())
-						cout << ", ";
+						cout << ", " << endl << "\t\t";
 		    	}
-				cout << "]" << endl;
+				cout << endl << '\t'<< "]" << endl << endl;
 			}
 		}
 };

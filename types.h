@@ -9,7 +9,10 @@ class Type {
     public: 
         string name;
         Type(string typeName):
-            name(typeName) {};
+           name(typeName) {}
+        virtual string get_name(){
+            return name;
+        }
 };
 
 class Int : public Type {
@@ -42,9 +45,43 @@ class Void : public Type {
         Void():Type("void"){};
 };
 
+class ArrayType: public Type {
+    public:
+        Type * type;
+        int size;
+        ArrayType(int s, Type * arrType):Type("array"),size(s), type(arrType){}
+        string get_name(){
+            return "array <" + type->get_name() + ">[" + to_string(size) + "]";
+        }
+};
+
+class GenericArray: public Type {
+    public: 
+        GenericArray():Type("array"){};
+};
+
+class ListType: public Type {
+    public:
+        Type * type;
+        ListType( Type * lType):Type("list"),type(lType){}
+        string get_name(){
+            return "list <" + type->get_name() + "> ";
+        }
+};
+
+class PointerType: public Type {
+    public:
+        Type * type;
+        PointerType( Type * pType):Type("pointer"),type(pType){}
+        string get_name(){
+            return "~" + type->get_name();
+        }
+};
+
 class Type_Error: public Type {
     public: 
         Type_Error():Type("type_error"){};
 };
 
+// class Pointer
 #endif

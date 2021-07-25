@@ -1,9 +1,9 @@
 {
     Beticas
-    bs a;
-    qlq b   
+    bs t
 
-    a = elda + (5 + c )
+    t = 5;
+    a(8, 2 ,4 ,4)
 
 
 }

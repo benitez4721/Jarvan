@@ -1,6 +1,6 @@
 #include <string>
 #include "types.h" 
-
+#include <vector>
 using namespace std;
 
 
@@ -9,10 +9,19 @@ string getTab(int tab);
 class Node {
     public:
         Type *type;
+        int len;
+        vector<Type*> args;
         virtual string to_s(int tab, int tabAux = 0) { };
-        void setType(Type *_type=NULL) {
+        virtual void setType(Type *_type=NULL) {
             type = _type;
-         };
+        }
+        virtual void increment_size(int prev_len){
+           len = prev_len + 1;
+        };
+        virtual void add_arg(vector<Type*> arg_t, Type * n_arg){
+            args = arg_t;
+            args.push_back(n_arg);
+        };
 };
 
 class Unary : public Node {
@@ -21,6 +30,9 @@ class Unary : public Node {
         Node * exp;
         Unary(Node * exp, string op);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class VacilaIn : public Node {
@@ -30,6 +42,9 @@ class VacilaIn : public Node {
         Node * program;
         VacilaIn(Node * id, Node * exp, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Repeticion2 : public Node {
@@ -38,6 +53,9 @@ class Repeticion2 : public Node {
         Node * program;
         Repeticion2(Node * exp, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Repeticion : public Node {
@@ -49,6 +67,9 @@ class Repeticion : public Node {
         Node * program;
         Repeticion(Node * declaration, Node * exp1, Node * exp2, Node * id, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class FunCall : public Node {
@@ -57,6 +78,9 @@ class FunCall : public Node {
         Node * args;
         FunCall(Node * , Node * args);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Params : public Node {
@@ -65,6 +89,7 @@ class Params : public Node {
         Node * param;
         Params(Node * l_params , Node * param);
         string to_s(int tab, int tabAux = 0);
+
 };
 
 class Chamba : public Node {

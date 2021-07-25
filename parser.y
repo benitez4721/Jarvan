@@ -27,9 +27,14 @@
     void redeclared_variable(string id, int line, int col);
     Type * checkIfDef(string id, int line, int col);
     void checkAsignType(Node * a, Node * b, int line, int col);
+    Type * checkPlusType(Node * a, Node * b, string op, int line, int col);
     Type * checkAritType(Node * a, Node * b, string op, int line, int col);
-
-
+    Type * checkBoolType(Node * a, Node * b, string op, int line, int col);
+    Type * checkCompareType(Node * a, Node * b, int line, int col);
+    Type * checkNumCompareType(Node * a, Node * b, int line, int col);
+    Type * checkArrType(Node * a, Node * b, int line, int col);
+    Type * checkMethod(string type_name, Node * a, string func, int line, int col);
+    Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col);
     Program * root_ast;
     sym_table st;
 
@@ -89,7 +94,7 @@
 %token DEREFERENCE 76
 %type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion 
 %type <program> Program 
-%type <type> Type
+%type <type> Type ArrayType
 
 %%
 Start               : Program                                                       {root_ast = $1;}
@@ -137,7 +142,7 @@ Declaration         : Type Init                                                 
                                                                                         $$ = new Declaration($2, $4);
                                                                                     }
                     | Type POINTER Id                                               {
-                                                                                        if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", $1)){cout << "ERROR Variable ya declarada" << endl;};
+                                                                                        if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", new PointerType($1))){cout << "ERROR Variable ya declarada" << endl;};
                                                                                         $$ = new Declaration($3, NULL);
                                                                                     }
                     | Type POINTER Init                                             {
@@ -189,11 +194,11 @@ Type                : BS                                                    {$$ 
                     | LABIA                                                 {$$ = new String();}
                     | LETRA                                                 {$$ = new Char();}                                                
                     | QLQ                                                   {$$ = new Bool();}
-                    | ArrayType LESS Type OBRACKET Exp CBRACKET GREATER                 {;}
+                    | ArrayType                                             {$$ = $1;}
                     ;
 
-ArrayType           : METRO                                                 {;}
-                    | METROBUS                                              {;}
+ArrayType           : METRO LESS Type OBRACKET INT CBRACKET GREATER                      {$$ = new ArrayType($5, $3)}
+                    | METROBUS LESS Type GREATER                                         {$$ = new ListType($3);}
                     ;
 
 // Literals
@@ -204,38 +209,38 @@ Literal             : INT                                                   {$$ 
                     | STRING                                                {$$ = new LiteralStr($1); $$->setType(new String())}                                             
                     | ELDA                                                  {$$ = new LiteralBool("elda");$$->setType(new Bool())}
                     | COBA                                                  {$$ = new LiteralBool("coba");$$->setType(new Bool())}
-                    | Array                                                 {$$ = new Array($1)}
+                    | Array                                                 {$$ = new Array($1); $$->setType(new ArrayType($1->len, $1->type))}
                     ;
 
-Array               : OBRACKET List CBRACKET                            {$$ = $2;}
+Array               : OBRACKET List CBRACKET                            {$$ = $2}
                     ;
 
-List                : Exp                                               {$$ = new ArrayList(NULL, $1);}                                               
-                    | List COMMA Exp                                    {$$ = new ArrayList($1, $3);}                                             
+List                : Exp                                               {$$ = new ArrayList(NULL, $1); $$->setType($1->type); $$->increment_size(0)}                                               
+                    | List COMMA Exp                                    {$$ = new ArrayList($1, $3);$$->setType(checkArrType($1, $3, @$.first_line, @$.first_column)); $$->increment_size($1->len)}                                             
                     ;
 
 Exp         : OPAR Exp CPAR                                                 {$$ = new Exp($2); $$->setType($2->type)}
 
-            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+"); $$->setType(checkAritType($1, $3, "+", @$.first_line, @$.first_column))}
-            | Exp MINUS Exp                                                 {$$ = new BinaryExp($1, $3, "-");}
-            | Exp MULT Exp                                                  {$$ = new BinaryExp($1, $3, "*");}
-            | Exp DIV Exp                                                   {$$ = new BinaryExp($1, $3, "/");}
-            | Exp POTEN Exp                                                 {$$ = new BinaryExp($1, $3, "^");}
-            | Exp INTDIV Exp                                                {$$ = new BinaryExp($1, $3, "//");}
-            | Exp REST Exp                                                  {$$ = new BinaryExp($1, $3, "%");}
+            | Exp PLUS Exp                                                  {$$ = new BinaryExp($1, $3, "+"); $$->setType(checkPlusType($1, $3, "+", @$.first_line, @$.first_column))}
+            | Exp MINUS Exp                                                 {$$ = new BinaryExp($1, $3, "-");$$->setType(checkAritType($1, $3, "-", @$.first_line, @$.first_column))}
+            | Exp MULT Exp                                                  {$$ = new BinaryExp($1, $3, "*");$$->setType(checkAritType($1, $3, "*", @$.first_line, @$.first_column))}
+            | Exp DIV Exp                                                   {$$ = new BinaryExp($1, $3, "/");$$->setType(checkAritType($1, $3, "/", @$.first_line, @$.first_column))}
+            | Exp POTEN Exp                                                 {$$ = new BinaryExp($1, $3, "^");$$->setType(checkAritType($1, $3, "^", @$.first_line, @$.first_column))}
+            | Exp INTDIV Exp                                                {$$ = new BinaryExp($1, $3, "//");$$->setType(checkAritType($1, $3, "//", @$.first_line, @$.first_column))}
+            | Exp REST Exp                                                  {$$ = new BinaryExp($1, $3, "%");$$->setType(checkAritType($1, $3, "%", @$.first_line, @$.first_column))}
 
-            | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&")}
-            | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||")}
+            | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
+            | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
             | NOT Exp                                                       {$$ = new Unary($2, "!")}
             | MINUS Exp                                                     {$$ = new Unary($2, "-")}
             | DEREFERENCE Id                                                {$$ = new Unary($2, "&")}
 
-            | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==")}
-            | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=")}
-            | Exp GEQ Exp                                                   {$$ = new BinaryExp($1, $3, ">=")}
-            | Exp LEQ Exp                                                   {$$ = new BinaryExp($1, $3, "<=")}
-            | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">")}
-            | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<")}
+            | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==");$$->setType(checkCompareType($1, $3, @$.first_line, @$.first_column))}
+            | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=");$$->setType(checkCompareType($1, $3, @$.first_line, @$.first_column))}
+            | Exp GEQ Exp                                                   {$$ = new BinaryExp($1, $3, ">=");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
+            | Exp LEQ Exp                                                   {$$ = new BinaryExp($1, $3, "<=");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
+            | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
+            | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
         
             | ArrOp                                                         {$$ = $1}
             | Conversion                                                    {$$ = $1}
@@ -292,8 +297,7 @@ Repeticion  : VACILA OPar Declaration SEMICOLON Exp SEMICOLON Exp CPAR OBLOCK Bo
             | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);} 
             ;
 
-ArrOp       : TAM OPAR Exp CPAR                                            {$$ = new EmbededFunc("Tam", $3)}
-            | SITIO OPAR Exp CPAR                                          {$$ = new EmbededFunc("Sitio", $3)}
+ArrOp       : SITIO OPAR Exp CPAR                                          {$$ = new EmbededFunc("Sitio", $3)}
             | METELE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Metele", $3)}
             | SACALE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Sacale", $3)}
             | VOLTEA OPAR Exp CPAR                                         {$$ = new EmbededFunc("Voltea", $3)}
@@ -301,11 +305,11 @@ ArrOp       : TAM OPAR Exp CPAR                                            {$$ =
 
 // // Sobre las funciones
 
-FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3);}
+FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3);cout<< $3->args.size() << endl; $$->setType(checkFuncCall($1, $3->args, @$.first_line, @$.first_column))}
             ;
 
-Args        : Args COMMA Exp                                                {$$ = new Params($1, $3);}
-            | Exp                                                           {$$ = new Params(NULL, $1);}
+Args        : Args COMMA Exp                                                {$$ = new Params($1, $3);$$->add_arg($1->args, $3->type);}
+            | Exp                                                           {$$ = new Params(NULL, $1);$$->add_arg({}, $1->type);}
             |                                                               {$$ = NULL;}
             ;
             
@@ -359,17 +363,18 @@ Type * checkIfDef(string id, int line, int col){
 }
 
 void checkAsignType(Node * a, Node * b, int line, int col){
-    string nameA = a->type->name;
-    string nameB = b->type->name;
+    string nameA = a->type->get_name();
+    string nameB = b->type->get_name();
     if(nameA != nameB){
         if(nameA != "type_error" && nameB != "type_error"){
             string error = "TypeError: cannot asign variable of type '" + nameB + "' to variable of type '" + nameA + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
             st_errors.push_back(error);
+            return;
         }
     }
 }
 
-Type * checkAritType(Node * a, Node * b, string op, int line, int col){
+Type * checkPlusType(Node * a, Node * b, string op, int line, int col){
     string nameA = a->type->name;
     string nameB = b->type->name;
     string error = "TypeError: cannot use operator '"+ op + "' with types '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
@@ -387,11 +392,111 @@ Type * checkAritType(Node * a, Node * b, string op, int line, int col){
     if((nameA == "char" && nameB =="str") ||(nameB == "char" && nameA == "str")){
         return new String();
     }
-    if(nameA != nameB){
-        st_errors.push_back(error);
-        return new Type_Error;
+    if((nameA == "int" && nameB == "float") ||(nameA == "float" && nameB == "int") ){
+        return new Float();
     }
     return a->type;
+}
+
+Type * checkArrType(Node * a, Node * b, int line, int col){
+    string nameA = a->type->get_name();
+    string nameB = b->type->get_name();
+    string error = "TypeError: some elements in array has diferents types at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if(nameA != nameB){
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    return a->type;
+
+}
+
+Type * checkAritType(Node * a, Node * b, string op, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    string error = "TypeError: cannot use operator '"+ op + "' with types '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if((nameA == "int" || nameA == "float") && (nameB == "float" || nameB == "int")){
+        if(op == "//"){
+            return new Int();
+        }
+        if(nameA == "float" || nameB == "float"){
+            return new Float();
+        }
+        return a->type; 
+    }
+    st_errors.push_back(error);
+    return new Type_Error();
+}
+
+Type * checkBoolType(Node * a, Node * b, string op, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    string error = "TypeError: cannot use operator '"+ op + "' with types '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if(nameA != "bool" || nameB != "bool"){
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    return a->type;
+}
+
+Type * checkArrMethod(Node * a, string func, Type * return_type, int line, int col){
+    string nameA = a->type->name;
+    if(nameA == "type_error"){
+        return a->type;
+    }
+    if(nameA != "array" || nameA != "list"){
+
+        string error = "TypeError:  '"+ func + "' takes one argument of type 'list' or 'array''" + nameA + "' but recives'" + nameA + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+        st_errors.push_back(error);
+    }
+    return new Int();
+
+}
+
+Type * checkCompareType(Node * a, Node * b, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    string error = "TypeError: forbids comparison between '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if(nameA != nameB){
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    return new Bool();
+}
+Type * checkNumCompareType(Node * a, Node * b, int line, int col){
+    string nameA = a->type->name;
+    string nameB = b->type->name;
+    string error = "TypeError: forbids comparison between '" + nameA + "' and '" + nameB + "'" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+    if(nameA == "type_error" || nameB == "type_error"){
+        return new Type_Error();
+    }
+    if((nameA == "int" || nameA == "float") && (nameB == "float" || nameB == "int")){
+        if(nameA == nameB){
+            return new Bool();
+        }
+    }
+    st_errors.push_back(error);
+    return new Type_Error();
+}
+Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col){
+    string id_name = dynamic_cast<Id*>(id)->id;
+    Type * return_type = checkIfDef(id_name, line, col);
+    if(return_type->name == "type_error"){
+        return return_type;
+    }
+    
+
 }
 void run_lexer(){
     cout << "executing lexer" << endl << endl;
