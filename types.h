@@ -13,6 +13,9 @@ class Type {
         virtual string get_name(){
             return name;
         }
+        virtual string get_simple_type(){
+            return name;
+        }
 };
 
 class Int : public Type {

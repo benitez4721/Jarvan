@@ -8,7 +8,7 @@ string getTab(int tab);
 
 class Node {
     public:
-        Type *type;
+        Type *type = NULL;
         int len;
         vector<Type*> args;
         virtual string to_s(int tab, int tabAux = 0) { };

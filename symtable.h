@@ -19,10 +19,11 @@ class extra_info{
 class extra_info_func : public extra_info {
 	public :
 		int child_scope;
-		int numOfArgs;
+		int numArgs;
+		bool isGeneric;
 		vector<Type*> args_types;
-		extra_info_func(int na, vector<Type*> at, int cs = 0):
-			extra_info(), child_scope(cs), numOfArgs(na), args_types(at){};
+		extra_info_func(int na, vector<Type*> at,bool is_g,  int cs = 0):
+			extra_info(), child_scope(cs), numArgs(na), args_types(at), isGeneric(is_g){};
 };
 
 /* Elementos de la tabla de simbolos, despues se expandira */
@@ -55,7 +56,7 @@ class sym_table {
 	public:
 		sym_table() : last_scope(0) {
 			stack.push_back(0);
-			insert("tam", "func", new Int(),new extra_info_func(1, {new GenericArray()}) );
+			insert("tam", "func", new Int(),new extra_info_func(1, {new GenericArray()}, true) );
 		};
 
 		int new_scope(){

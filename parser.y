@@ -35,6 +35,8 @@
     Type * checkArrType(Node * a, Node * b, int line, int col);
     Type * checkMethod(string type_name, Node * a, string func, int line, int col);
     Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col);
+    bool checkReturnType(Type * f, Type * r, int line, int col);
+    string getArgsList(vector<Type*> args);
     Program * root_ast;
     sym_table st;
 
@@ -109,10 +111,9 @@ OScope              : OBLOCK                                                    
 
 CScope              : CBLOCK                                                        {st.exit_scope()}
 
-Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);}
+Body                : BETICAS DeclarationList InstList                                    {$$ = new Body($2, $3);$$->setType($3->type)}
                     | BETICAS DeclarationList                                             {$$ = new Body($2, NULL);}
-                    | InstList                                                            {$$ = new Body(NULL, $1);}
-                    ;
+                    | InstList                                                            {$$ = new Body(NULL, $1); $$->setType($1->type)}
                     ;
 
 // Variables Declaration
@@ -130,6 +131,7 @@ Declaration         : Type Init                                                 
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         checkAsignType(idNode, exp, @$.first_line, @$.first_column);
                                                                                         $$ = new Declaration($2, NULL);
+                                                                                        $$->setType($1)
                                                                                     }                                                                    
                     | BUS Id OScope DeclarationList CScope                          { 
                                                                                         string id = dynamic_cast<Id*>($2)->id; 
@@ -142,7 +144,7 @@ Declaration         : Type Init                                                 
                                                                                         $$ = new Declaration($2, $4);
                                                                                     }
                     | Type POINTER Id                                               {
-                                                                                        if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", new PointerType($1))){cout << "ERROR Variable ya declarada" << endl;};
+                                                                                        if(!st.insert(dynamic_cast<Id*>($3)->id, "Variable", new PointerType($1))){redeclared_variable(dynamic_cast<Id*>($3)->id, @$.first_line, @$.first_column);};
                                                                                         $$ = new Declaration($3, NULL);
                                                                                     }
                     | Type POINTER Init                                             {
@@ -156,6 +158,7 @@ Declaration         : Type Init                                                 
                                                                                         idNode->setType($1);
                                                                                         if(!st.insert(id, "Variable", $1)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, NULL);
+                                                                                        $$->setType($1)
                                                                                     }
                     ;
 
@@ -209,7 +212,7 @@ Literal             : INT                                                   {$$ 
                     | STRING                                                {$$ = new LiteralStr($1); $$->setType(new String())}                                             
                     | ELDA                                                  {$$ = new LiteralBool("elda");$$->setType(new Bool())}
                     | COBA                                                  {$$ = new LiteralBool("coba");$$->setType(new Bool())}
-                    | Array                                                 {$$ = new Array($1); $$->setType(new ArrayType($1->len, $1->type))}
+                    | Array                                                 {$$ = new Array($1); $$->setType(new ArrayType($1->len, $1->type));}
                     ;
 
 Array               : OBRACKET List CBRACKET                            {$$ = $2}
@@ -249,8 +252,8 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Lvalue                                                        {$$ = $1}
             ;
 
-InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);}
-            | Inst                                                          {$$ = new InstList(NULL, $1);}
+InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);if(!$1->type){$$->setType($3->type);}else{$$->setType($1->type);}}
+            | Inst                                                          {$$ = new InstList(NULL, $1); $$->setType($1->type)}
 
 Inst        : Conversion                                                        {$$ = $1;}
             | Seleccion                                                         {$$ = $1;}
@@ -261,7 +264,7 @@ Inst        : Conversion                                                        
             | ArrOp                                                             {$$ = $1;}
             | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
             | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
-            | RESCATA Exp                                                       {$$ = new Rescata($2)}
+            | RESCATA Exp                                                       {$$ = new Rescata($2); $$->setType($2->type)}
             | Program                                                           {$$ = $1;}
             ;
 
@@ -305,7 +308,7 @@ ArrOp       : SITIO OPAR Exp CPAR                                          {$$ =
 
 // // Sobre las funciones
 
-FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3);cout<< $3->args.size() << endl; $$->setType(checkFuncCall($1, $3->args, @$.first_line, @$.first_column))}
+FuncCall    : Id OPAR Args CPAR                                                  {$$ = new FunCall($1,$3); if(!$3){$$->setType(checkFuncCall($1, {}, @$.first_line, @$.first_column));}else{$$->setType(checkFuncCall($1, $3->args, @$.first_line, @$.first_column));}}
             ;
 
 Args        : Args COMMA Exp                                                {$$ = new Params($1, $3);$$->add_arg($1->args, $3->type);}
@@ -316,7 +319,14 @@ Args        : Args COMMA Exp                                                {$$ 
 
 FuncDef     : CHAMBA Type Id OPar ParamList CPAR OBLOCK Body CScope             {
                                                                                     string id = dynamic_cast<Id*>($3)->id; 
-                                                                                    if(!st.insert(id, "Func", $2)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                    extra_info_func * ef; 
+                                                                                    if(!$5){                                                                                            
+                                                                                        ef=new extra_info_func(0,{},false);
+                                                                                    }else{
+                                                                                        ef=new extra_info_func($5->args.size(), $5->args, false);
+                                                                                    }
+                                                                                    if(!st.insert(id, "func", $2, ef)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                    checkReturnType($2, $8->type, @$.first_line, @$.first_column);
                                                                                     $$ = new Chamba($3, $5, $8);
                                                                                 }
             | CHAMBA NADA Id OPAR ParamList CPAR Program                {
@@ -329,8 +339,8 @@ FuncDef     : CHAMBA Type Id OPar ParamList CPAR OBLOCK Body CScope             
             
 OPar        : OPAR                                                      {st.new_scope()}
             
-ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);}
-            | Declaration                                                   {$$ = new Params(NULL, $1)}
+ParamList   : ParamList COMMA Declaration                                   {$$ = new Params($1, $3);$$->add_arg($1->args, $3->type);}
+            | Declaration                                                   {$$ = new Params(NULL, $1);$$->add_arg({}, $1->type);}
             |                                                               {$$ = NULL}
             ;
 
@@ -495,8 +505,73 @@ Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col){
     if(return_type->name == "type_error"){
         return return_type;
     }
-    
+    table_element * symbol = st.lookup(id_name);
+    extra_info_func * ef = dynamic_cast<extra_info_func*>(symbol->ef);
+    if(symbol->category != "func"){
+        string error = "Error: " + id_name + " is not a function, at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
+    if(ef->numArgs != args.size()){
+        string error = "Error: " + id_name + " takes " + to_string(ef->numArgs) + " arguments but received " + to_string(args.size()) + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+        st_errors.push_back(error);
+        return new Type_Error();
+    }
 
+    for(int i=0; i < args.size(); i++){
+        if(ef->isGeneric){
+            string argType = args[i]->get_simple_type();
+            cout << argType <<endl;
+            if(argType != "list" && argType != "array"){
+                string error = "Error: no matching function for call to " + id_name + getArgsList(args);
+                st_errors.push_back(error);
+                return new Type_Error();
+            }
+        }else{
+            if(ef->args_types[i]->get_name() != args[i]->get_name()){
+                string error = "Error: no matching function for call to " + id_name + getArgsList(args);
+                st_errors.push_back(error);
+                return new Type_Error();
+            }
+        }
+    }
+
+    return return_type;
+
+}
+
+bool checkReturnType(Type * a, Type * r, int line, int col){
+    string nameR = r->get_name();
+    string nameA = a->get_name();
+    if(nameR == "type_error"){
+        return false;
+    }
+    if(nameA != "int" && nameA != "str" && nameA != "char" && nameA != "bool" && nameA != "float"){
+        string error = "TypeError: invalid return type at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+        st_errors.push_back(error);
+        return false;
+    }
+
+    if(nameR != nameA){
+        string error = "TypeError: return type does not match with func type at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+        st_errors.push_back(error);
+        return false;
+    }
+    return true;
+}
+
+string getArgsList(vector<Type*> args){
+    string s = "(";
+    for(int i=0; i < args.size(); i++ ){
+        if(i == args.size() - 1){
+            s += args[i]->get_name();
+        }else{
+
+            s += args[i]->get_name() + ", ";
+        }
+    }
+    s += ")";
+    return s;
 }
 void run_lexer(){
     cout << "executing lexer" << endl << endl;

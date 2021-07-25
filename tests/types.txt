@@ -1,9 +1,16 @@
 {
     Beticas
-    bs t
+    bs t;
+    Metrobus <qlq> b;
+    Metro <bs[4]> c
 
     t = 5;
-    a(8, 2 ,4 ,4)
+    rescata 5;
+    Chamba Metrobus<bs> m(bs i, bs j){
+        rescata 4 
+    };
+
+    m(5, 6 )
 
 
 }
