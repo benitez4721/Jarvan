@@ -6,6 +6,7 @@
 #include <string.h>
 #include<iostream>
 #include "ast.h"
+#include <vector>
 #include "symtable.h"
 #include "parser.tab.h"
 using namespace std;
@@ -18,6 +19,8 @@ int yycolumn = 1;
     yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
     yycolumn += yyleng; \
     yylval.str = strdup(yytext);
+
+vector<string> lex_errors;
 
 %}
 
@@ -92,5 +95,5 @@ string                   (\".*\")
 "rescata"               {return RESCATA;}
 "."                     {return POINT;}
 {id}                    {return ID;}
-.                       {return ERROR;}
+.                       {string temp = strdup(yytext);lex_errors.push_back("Error: Unexpected character " + temp + " at line " + to_string(yylineno) + ", column " + to_string(yycolumn) + "\n");}
 %%

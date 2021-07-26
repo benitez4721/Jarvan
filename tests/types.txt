@@ -1,13 +1,22 @@
 {
     Beticas
-    bs a ; 
-    bs ~p;
     Bus h {
         bs a
     };
-    h ~my;
-    new(my);
-    imprimir(&my)
+    Metrobus <bs> arr
+
+    vacila (bs i; i < "hola"; i + 1) {
+        metele(arr, "hoal")
+    };
+
+    Chamba bs hol(h ~jj){
+        Beticas
+        h mystruct 
+        mystruct = &jj;
+        imprimir(mystruct.x);
+        rescata 6 
+    }
+    
 
 
 }

@@ -192,6 +192,7 @@ class sym_table {
 			}
 			table_element * register_el = lookup(register_id);
 
+
 			if(register_el == NULL || register_el->category != "struct"){
 				string e = "TypeError: '" + register_id + "' is not a struct" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
 				errors.push_back(e);	
@@ -227,6 +228,51 @@ class sym_table {
 			return true;
 
 		}
+
+		Type * checkUnaryExp(Type * e,string op, int line, int col, vector<string> &errors){
+			string e_name = e->get_simple_type();
+			if(e_name == "type_error"){
+				return e;
+			}
+			if(op == "-"){
+				if(!(e_name == "int" || e_name == "float")){
+					
+        			string error = "TypeError: expected type 'int' or 'float' but received '" + e_name + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+					errors.push_back(error);
+					return new Type_Error();
+				}
+				return e;
+			}
+			if(op == "!"){
+				if(!(e_name == "bool")){
+
+        			string error = "TypeError: expected type 'bool' but received '" + e_name + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+					errors.push_back(error);
+					return new Type_Error();
+				}
+				return e;
+			}
+
+		}
+		Type * checkDeref(Node * id, int line, int col, vector<string> &errors){
+			
+			string id_name = dynamic_cast<Id*>(id)->id;
+			table_element * id_el = lookup(id_name);
+			if(id_el==NULL){
+
+				string error = "Error: variable " + id_name + " at line " + to_string(line) + ", column " + to_string(col) + ", has not been declared."+ "\n";
+				errors.push_back(error);
+				return  new Type_Error();
+			}
+			if(id_el->type->get_simple_type() != "pointer"){
+        		string error = "TypeError: expected type 'pointer' but received '" + id_el->type->get_simple_type() + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+				errors.push_back(error);
+				return new Type_Error();
+			}
+			PointerType * p= dynamic_cast<PointerType*>(id_el->type);
+			return p->type;
+		}
+
 
 		void print(){		
 			std::cout << std::endl << "Imprimiendo tabla de simbolos:" << std::endl; 

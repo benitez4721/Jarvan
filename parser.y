@@ -24,6 +24,7 @@
     extern int yycolumn;
     extern FILE* yyin;
     extern char* yytext;
+    extern vector<string> lex_errors;
     void redeclared_variable(string id, int line, int col);
     Type * checkIfDef(string id, int line, int col);
     void checkAsignType(Node * a, Node * b, int line, int col);
@@ -168,9 +169,21 @@ Declaration         : Type Init                                                 
                                                                                         Id *typeNode = dynamic_cast<Id*>($1); 
                                                                                         string id = idNode->id;
                                                                                         string type = typeNode->id;
-                                                                                        if(!st.insert(id, "Variable", new PointerType(new StructType(type)))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        if(!st.insert(id, "struct", new PointerType(new StructType(type)))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($3, NULL);
                                                                                         $$->setType(new Type_Error());
+                    };}
+                    | Id Id                                                 {if(st.checkIsValidType($1, @$.first_line, @$.first_column, st_errors)){
+
+                                                                                        Id *idNode = dynamic_cast<Id*>($2); 
+                                                                                        Id *typeNode = dynamic_cast<Id*>($1); 
+                                                                                        string id = idNode->id;
+                                                                                        string type = typeNode->id;
+			table_element * register_el = st.lookup(type);
+			int cs = dynamic_cast<extra_info_struct*>(register_el->ef)->child_scope;
+                                                                                        if(!st.insert(id, "struct", new StructType(type), new extra_info_struct(cs))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($2, NULL);
+                                                                                        $$->setType(new StructType(type));
                     };}
                     ;
 
@@ -267,9 +280,9 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
 
             | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
             | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
-            | NOT Exp                                                       {$$ = new Unary($2, "!");$$->setType()}
-            | MINUS Exp                                                     {$$ = new Unary($2, "-");}
-            | DEREFERENCE Id                                                {$$ = new Unary($2, "&")}
+            | NOT Exp                                                       {$$ = new Unary($2, "!");$$->setType(st.checkUnaryExp($2->type,"!", @$.first_line, @$.first_column, st_errors))}
+            | MINUS Exp                                                     {$$ = new Unary($2, "-");$$->setType(st.checkUnaryExp($2->type,"-", @$.first_line, @$.first_column, st_errors))}
+            | DEREFERENCE Id                                                {$$ = new Unary($2, "&");$$->setType(st.checkDeref($2, @$.first_line, @$.first_column, st_errors))}
 
             | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==");$$->setType(checkCompareType($1, $3, @$.first_line, @$.first_column))}
             | Exp NQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "!=");$$->setType(checkCompareType($1, $3, @$.first_line, @$.first_column))}
@@ -697,9 +710,9 @@ void run_lexer(){
         ntoken = yylex();
 
     }
-    if(errors.size() > 0){
-        for(int i = 0; i < errors.size(); i++){
-            cout << errors[i].to_str();
+    if(lex_errors.size() > 0){
+        for(int i = 0; i < lex_errors.size(); i++){
+            cout << lex_errors[i];
         }
     }else {
         for(int i = 0; i < tokens.size(); i++){
@@ -719,27 +732,19 @@ void run_parser(){
 		cout << "Error: " << endl;
 			cout << errorMessage << endl;
 	}
-	
-    // cout << root_ast->to_s(0,0) << endl;
-    if(st_errors.size() > 0){
-        st.print();
-        for(int i = 0; i <st_errors.size(); i++){
-            cout << st_errors[i];
-        }
-    }else{
 
-        st.print();
-    }
-    // cout << st.print() << endl;
-	// Si hay errores del lexer, imprimirlos
-    
-    // imprimir_tabla();
+
+
+	
 }
 
 int main(int argc, char *argv[]){
     init_tokens_definitions();
     string filePath = argv[1];
     yyin = fopen(argv[1], "r");
+    bool ast = false;
+    bool stp = false;
+    bool l = false;
     if (yyin == false){
     	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
     	return 0;
@@ -750,15 +755,40 @@ int main(int argc, char *argv[]){
 			string arg(argv[i]);
 			if (arg == "-l"){
 				run_lexer();
+                l = true;
 			}
 			else if (arg == "-p"){
 				run_parser();
 			}
+            else if (arg == "-ast"){
+				run_parser();
+                ast = true;
+            }
+            else if(arg == "-stp"){
+				run_parser();
+                stp = true;
+            }
 		}
 	} else {
 		// por defecto ejecuta el parser
 		run_parser();
 	}
+    if(!l){
+        if(stp) st.print();
+        if(ast){
+            cout << root_ast->to_s(0,0) << endl;
+        }
+        if(!lex_errors.empty()){
+            for(int i = 0; i <lex_errors.size(); i++){
+                cout << lex_errors[i];
+            }
+        }
+        if(st_errors.size() > 0){
+            for(int i = 0; i <st_errors.size(); i++){
+                cout << st_errors[i];
+            }
+        }
+    }
 
     return 0;
 }
