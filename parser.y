@@ -169,7 +169,7 @@ Declaration         : Type Init                                                 
                                                                                         Id *typeNode = dynamic_cast<Id*>($1); 
                                                                                         string id = idNode->id;
                                                                                         string type = typeNode->id;
-                                                                                        if(!st.insert(id, "struct", new PointerType(new StructType(type)))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        if(!st.insert(id, "Variable", new PointerType(new StructType(type)))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($3, NULL);
                                                                                         $$->setType(new Type_Error());
                     };}

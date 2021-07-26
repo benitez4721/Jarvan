@@ -187,6 +187,7 @@ class sym_table {
 			string register_id = dynamic_cast<Id*>(register_acc)->id;
 			string att_id = dynamic_cast<Id*>(att)->id;
 
+
 			if(s->type->get_name() == "type_error"){
 				return new Type_Error();
 			}

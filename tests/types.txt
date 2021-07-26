@@ -1,12 +1,16 @@
 {
     Beticas
-    Bus h {
-        bs a
+    Bus pasajero {
+        labia sexo;
+        int edad;
     };
-    Metrobus <bs> arr
+    Metrobus <Bus pasajero {
+        Labia sexo;
+        int edad;
+    } > arr
 
     vacila (bs i; i < "hola"; i + 1) {
-        metele(arr, "hoal")
+        metele(arr, i)
     };
 
     Chamba bs hol(h ~jj){
