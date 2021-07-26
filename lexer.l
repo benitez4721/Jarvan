@@ -37,8 +37,6 @@ string                   (\".*\")
 \n								{yycolumn = 1;}
 "bs"                    {return BS;}
 "bsf"                   {return BSF;}
-"devalua"               {return DEVALUA;}
-"efectivo"              {return EFECTIVO;}
 "letra"                 {return LETRA;}
 "nada"                  {return NADA;}
 "Beticas"               {return BETICAS;}
@@ -76,10 +74,6 @@ string                   (\".*\")
 ")"                     {return CPAR;}
 "["                     {return OBRACKET;}
 "]"                     {return CBRACKET;}
-"sitio"                 {return SITIO;}
-"metele"                {return METELE;}
-"sacale"                {return SACALE;}
-"voltea"                {return VOLTEA;}
 (#)(.*?)              {yycolumn = 1;}
 "elda"                  {return ELDA;}
 "coba"                  {return COBA;}

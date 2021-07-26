@@ -35,6 +35,7 @@
     Type * checkArrType(Node * a, Node * b, int line, int col);
     Type * checkMethod(string type_name, Node * a, string func, int line, int col);
     Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col);
+    bool checkExpectedType(Type * e, Type * r, int line, int col, bool isPoli=false);
     bool checkReturnType(Type * f, Type * r, int line, int col);
     string getArgsList(vector<Type*> args);
     Program * root_ast;
@@ -94,9 +95,10 @@
 %token NADA 74
 %token POINT 75
 %token DEREFERENCE 76
-%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos Conversion ArrOp FuncDef ParamList FuncCall Args Repeticion 
+%type <node> Body DeclarationList Declaration Id Asignacion Literal Exp InstList Inst Lvalue Init ListAccesor Indexing ArrayIndexing List Array Seleccion Seleccion2 Casos  FuncDef ParamList FuncCall Args Repeticion 
 %type <program> Program 
 %type <type> Type ArrayType
+%type <num> OScope 
 
 %%
 Start               : Program                                                       {root_ast = $1;}
@@ -107,7 +109,7 @@ Program             :  OScope Body CScope                                       
                     |  OBLOCK CBLOCK                                                {$$ = new Program(NULL);}
                     ;
 
-OScope              : OBLOCK                                                        {st.new_scope();}
+OScope              : OBLOCK                                                        {st.new_scope();$$ = st.last_scope}
 
 CScope              : CBLOCK                                                        {st.exit_scope()}
 
@@ -135,7 +137,7 @@ Declaration         : Type Init                                                 
                                                                                     }                                                                    
                     | BUS Id OScope DeclarationList CScope                          { 
                                                                                         string id = dynamic_cast<Id*>($2)->id; 
-                                                                                        if(!st.insert(id, "Struct", NULL)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        if(!st.insert(id, "struct", new StructType(), new extra_info_struct($3))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, $4);
                                                                                     }
                     | BULULU Id OScope DeclarationList CScope                       {
@@ -172,24 +174,45 @@ Lvalue              : ListAccesor                                       {$$ = $1
                     | Indexing                                            {$$ = $1;}
                     ; 
 
-ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);}
+ListAccesor         : ListAccesor POINT Id                              {$$ = new ListAccesor($1, $3);$$->setType(st.checkAttr($1, $3, @$.first_line, @$.first_column, st_errors))}
                     | ListAccesor POINT Indexing                        {$$ = new ListAccesor($1, $3);}
                     | Id                                                {
                                                                             string id = dynamic_cast<Id*>($1)->id; 
                                                                             Type * type = checkIfDef(id, @$.first_line, @$.first_column);
                                                                             $$ = new ListAccesor(NULL, $1);
-                                                                            $$->setType(type)
+                                                                            $$->setType(type);
                                                                         }
                     ; 
 
-Indexing            : Id ArrayIndexing                                  {$$ = new Indexing($1, $2);}
+Indexing            : Id ArrayIndexing                                  {$$ = new Indexing($1, $2);$$->setType(new Type_Error());
+                                                                            string id = dynamic_cast<Id*>($1)->id; 
+                                                                            Type * type = checkIfDef(id, @$.first_line, @$.first_column);
+                                                                            checkExpectedType(NULL,type, @$.first_line, @$.first_column, true);
+                                                                            checkExpectedType(new Int(),$2->type, @$.first_line, @$.first_column);
+                                                                            if($2->type->get_simple_type() == "type_error" ||type->get_simple_type() == "type_error"){
+                                                                                $$->setType(new Type_Error());
+                                                                            }else{
+                                                                                if(type->get_simple_type() == "array"){                                                                                        
+                                                                                   Type * arrType = dynamic_cast<ArrayType*>(type)->type;
+                                                                                    $$->setType(arrType);
+                                                                                }
+                                                                                else if(type->get_simple_type() == "list"){
+
+                                                                                   Type * arrType = dynamic_cast<ListType*>(type)->type;
+                                                                                    $$->setType(arrType);
+                                                                                }else{
+
+                                                                                $$->setType(new Type_Error());
+                                                                                }
+                                                                            }
+}
                     ;
 
 Id			        : ID										        {$$ = new Id($1);}
 			        ;
 
-ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {$$ = new ListIndexing($1, $3)}
-                    | OBRACKET Exp CBRACKET                             {$$ = new ListIndexing(NULL, $2)}
+ArrayIndexing	    : ArrayIndexing OBRACKET Exp CBRACKET  		        {$$ = new ListIndexing($1, $3);}
+                    | OBRACKET Exp CBRACKET                             {$$ = new ListIndexing(NULL, $2);$$->setType($2->type)}
                     ;
 
 Type                : BS                                                    {$$ = new Int();}
@@ -245,8 +268,6 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
             | Exp GREATER Exp                                               {$$ = new BinaryExp($1, $3, ">");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
             | Exp LESS Exp                                                  {$$ = new BinaryExp($1, $3, "<");$$->setType(checkNumCompareType($1, $3, @$.first_line, @$.first_column))}
         
-            | ArrOp                                                         {$$ = $1}
-            | Conversion                                                    {$$ = $1}
             | Literal                                                       {$$ = $1;}                                                          
             | FuncCall                                                      {$$ = $1}
             | Lvalue                                                        {$$ = $1}
@@ -255,24 +276,19 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
 InstList    : InstList SEMICOLON Inst                                       {$$ = new InstList($1, $3);if(!$1->type){$$->setType($3->type);}else{$$->setType($1->type);}}
             | Inst                                                          {$$ = new InstList(NULL, $1); $$->setType($1->type)}
 
-Inst        : Conversion                                                        {$$ = $1;}
-            | Seleccion                                                         {$$ = $1;}
+Inst        : Seleccion                                                         {$$ = $1;}
             | Repeticion                                                        {$$ = $1;}
             | FuncDef                                                           {$$ = $1;}
             | FuncCall                                                          {$$ = $1;}
             | Asignacion                                                        {$$ = $1;}
-            | ArrOp                                                             {$$ = $1;}
             | IMPRIMIR OPAR Exp CPAR                                            {$$ = new Io($3,"Imprimir");}
             | LEER OPAR Id CPAR                                                 {$$ = new Io($3, "Leer");}
             | RESCATA Exp                                                       {$$ = new Rescata($2); $$->setType($2->type)}
             | Program                                                           {$$ = $1;}
             ;
 
-Conversion  : EFECTIVO OPAR Exp CPAR                                   {$$ = new EmbededFunc("Efectivo", $3)}
-            | DEVALUA OPAR Exp CPAR                                    {$$ = new EmbededFunc("Devalua", $3)}
-            ;
 
-Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {$$ = new Seleccion($3,$5,$6,"Porsia")}
+Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {$$ = new Seleccion($3,$5,$6,"Porsia"); checkExpectedType(new Bool(), $3->type, @$.first_line, @$.first_column)}
             | TANTEA OPar Type Id CPAR OBLOCK Casos CBLOCK                  {
                                                                                 string id = dynamic_cast<Id*>($4)->id; 
                                                                                 if(!st.insert(id, "Variable", $3)){redeclared_variable(id, @$.first_line, @$.first_column);}; 
@@ -281,7 +297,7 @@ Seleccion   : PORSIA OPAR Exp CPAR Program Seleccion2                       {$$ 
                                                                             }
             ;
 
-Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {$$ = new Seleccion( $3, $5, $6, "Sino")}
+Seleccion2  : SINO OPAR Exp CPAR Program  Seleccion2                          {$$ = new Seleccion( $3, $5, $6, "Sino");checkExpectedType(new Bool(), $3->type, @$.first_line, @$.first_column)}
             | NIMODO Program                                                  {$$ = new Seleccion(NULL, $2, NULL, "Nimodo")}
             |                                                                 {$$ = NULL;}
             ;
@@ -297,14 +313,9 @@ Repeticion  : VACILA OPar Declaration SEMICOLON Exp SEMICOLON Exp CPAR OBLOCK Bo
                                                                                                     $$ = new Repeticion(NULL, $6, NULL, $4, $9);
                                                                                                     st.exit_scope()
                                                                                                 }  
-            | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);} 
+            | PEGAO OPAR Exp CPAR Program                                          {$$ = new Repeticion2($3, $5);checkExpectedType(new Bool(), $3->type, @$.first_line, @$.first_column)} 
             ;
 
-ArrOp       : SITIO OPAR Exp CPAR                                          {$$ = new EmbededFunc("Sitio", $3)}
-            | METELE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Metele", $3)}
-            | SACALE OPAR Exp CPAR                                         {$$ = new EmbededFunc("Sacale", $3)}
-            | VOLTEA OPAR Exp CPAR                                         {$$ = new EmbededFunc("Voltea", $3)}
-            ;
 
 // // Sobre las funciones
 
@@ -355,6 +366,27 @@ ParamList   : ParamList COMMA Declaration                                   {$$ 
 void yyerror (char const *s) {
     cout << "Sintax Error, unexpected: " << yytext << " in row " << yylineno << ", column " << yycolumn-strlen(yytext) << ".\n"; 
     // fprintf (stderr, "%s%s\n", s);
+}
+
+bool checkExpectedType(Type * e, Type * r, int line, int col, bool isPoli){
+    if(r->get_simple_type() =="type_error"){
+        return false;
+    }
+    if(isPoli){
+        string rName = r->get_simple_type();
+        if(!(rName=="array") && !(rName=="list")){
+            string error = "TypeError: expected type 'list' or 'array' but received '" + rName + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+            st_errors.push_back(error);
+            return false;
+        }
+        return true;
+    }
+    if(e->get_name() != r->get_name()){
+        string error = "TypeError: expected type '" + e->get_name() + "' but received '" + r->get_name() + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+        st_errors.push_back(error);
+        return false;
+    }
+    return true;
 }
 
 void redeclared_variable(string id, int line, int col){
@@ -518,11 +550,55 @@ Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col){
         return new Type_Error();
     }
 
+
+    if(id_name == "sitio"){
+        string argName =args[0]->get_simple_type();
+        string arg2Name = args[1] -> get_name();
+        
+        if(argName != "array" && argName != "list"){
+            string error = "TypeError: Invalid first argument for function '" + id_name + "' expected 'Metro' or 'Metrobus' but received '" + argName + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        string typeName = argName == "array" ? static_cast<ArrayType*>(args[0])->type->get_name() : static_cast<ListType*>(args[0])->type->get_name();
+        if(typeName != arg2Name){
+            string error = "TypeError: Invalid second argument for function '" + id_name + "' expected '"+ typeName +"' but received '" + arg2Name + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        return new Int();
+    }
+    if(id_name == "metele"){
+        string argName =args[0]->get_simple_type();
+        string arg2Name = args[1] -> get_name();
+        
+        if(argName != "list"){
+            string error = "TypeError: Invalid first argument for function '" + id_name + "' expected 'Metrobus' but received '" + argName + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        string typeName =  static_cast<ListType*>(args[0])->type->get_name();
+        if(typeName != arg2Name){
+            string error = "TypeError: Invalid second argument for function '" + id_name + "' expected '"+ typeName +"' but received '" + arg2Name + "' at line "+ to_string(line) + ", column " + to_string(col) + "\n"; 
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        return new Void();
+ 
+    }
+    if(id_name == "sacale" || id_name == "voltea"){
+        if(args[0]->get_simple_type() != "list"){
+            string error = "Error: no matching function for call to " + id_name + getArgsList(args);
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        return new Void();
+    }
     for(int i=0; i < args.size(); i++){
         if(ef->isGeneric){
             string argType = args[i]->get_simple_type();
-            cout << argType <<endl;
             if(argType != "list" && argType != "array"){
+
                 string error = "Error: no matching function for call to " + id_name + getArgsList(args);
                 st_errors.push_back(error);
                 return new Type_Error();
@@ -628,6 +704,7 @@ void run_parser(){
 	
     // cout << root_ast->to_s(0,0) << endl;
     if(st_errors.size() > 0){
+        st.print();
         for(int i = 0; i <st_errors.size(); i++){
             cout << st_errors[i];
         }

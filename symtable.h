@@ -1,4 +1,6 @@
 
+#ifndef S_H
+#define S_H
 #include <vector>
 #include <deque>
 #include <map>
@@ -15,6 +17,13 @@ class extra_info{
 		extra_info(){};
 		virtual ~extra_info() = default;
 };
+class extra_info_struct : public extra_info {
+	public :
+		int child_scope;
+		extra_info_struct(int cs):
+			extra_info(), child_scope(cs){};
+};
+
 
 class extra_info_func : public extra_info {
 	public :
@@ -52,11 +61,17 @@ class sym_table {
 	private:
 		map<string, deque<table_element*> > table;
 		vector<int> stack;
-		int last_scope;
 	public:
+		int last_scope;
 		sym_table() : last_scope(0) {
 			stack.push_back(0);
 			insert("tam", "func", new Int(),new extra_info_func(1, {new GenericArray()}, true) );
+			insert("sitio", "func", new Int(),new extra_info_func(2, {}, true) );
+			insert("metele", "func", new Int(),new extra_info_func(2, {}, true) );
+			insert("sacale", "func", new Int(),new extra_info_func(1, {new GenericList()}, false) );
+			insert("voltea", "func", new Int(),new extra_info_func(1, {new GenericList()}, false) );
+			insert("devalua", "func", new Float(),new extra_info_func(1, {new Int()}, false) );
+			insert("efectivo", "func", new Int(),new extra_info_func(1, {new Float()}, false) );
 		};
 
 		int new_scope(){
@@ -122,6 +137,18 @@ class sym_table {
 			}
 			return pervasive;
 		}
+		table_element * lookup(string id, int scope) {
+			for(auto e : table[id]) {
+				if(e->id == id) {
+					if(scope == e->scope) {
+						return e;
+					}
+				}
+			}
+			table_element * best = NULL;
+			return best;
+		}
+
 
 		// table_element * lookup_top(std::string x){
 
@@ -154,6 +181,39 @@ class sym_table {
 			return true;
 		}
 
+		Type * checkAttr(Node * s, Node * att, int line, int col, vector<string> &errors){
+			Node * register_acc = dynamic_cast<ListAccesor*>(s)->accesor;
+			string register_id = dynamic_cast<Id*>(register_acc)->id;
+			string att_id = dynamic_cast<Id*>(att)->id;
+
+			if(s->type->get_name() == "type_error"){
+				return new Type_Error();
+			}
+			table_element * register_el = lookup(register_id);
+
+			if(register_el == NULL || register_el->category != "struct"){
+				string e = "TypeError: '" + register_id + "' is not a struct" + " at line "+ to_string(line) + ", column " + to_string(col) + "\n";
+				errors.push_back(e);	
+				return new Type_Error();
+			}
+
+
+			int cs = dynamic_cast<extra_info_struct*>(register_el->ef)->child_scope;
+			table_element * attr = lookup(att_id,cs);
+
+			if (attr == NULL){
+				errors.push_back("Error: type '" + register_id  + "' has no attribute '" + att_id +"' at line "+ to_string(line) + ", column " + to_string(col) + "\n");
+				return new Type_Error();
+			}
+   			return attr->type;
+			return new Type_Error();
+		}
+
+		Type * checkIndex(Node * a, Type * t, int line, int col, vector<string> &errors){
+			cout << a->type->get_simple_type() << endl; 
+			return new Type_Error();
+		}
+
 		void print(){		
 			std::cout << std::endl << "Imprimiendo tabla de simbolos:" << std::endl; 
 			map<string, deque<table_element*>>::iterator it;
@@ -169,3 +229,5 @@ class sym_table {
 			}
 		}
 };
+
+#endif

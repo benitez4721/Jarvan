@@ -2,6 +2,7 @@
 
 #ifndef TYPES_H
 #define TYPES_H
+#include<iostream>
 #include <string>
 using namespace std;
 
@@ -62,6 +63,10 @@ class GenericArray: public Type {
     public: 
         GenericArray():Type("array"){};
 };
+class GenericList: public Type {
+    public: 
+        GenericList():Type("list"){};
+};
 
 class ListType: public Type {
     public:
@@ -81,10 +86,17 @@ class PointerType: public Type {
         }
 };
 
+class StructType: public Type {
+    public:
+        StructType():Type("struct"){}
+};
+
+
 class Type_Error: public Type {
     public: 
         Type_Error():Type("type_error"){};
 };
+
 
 // class Pointer
 #endif
