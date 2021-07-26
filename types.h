@@ -88,7 +88,11 @@ class PointerType: public Type {
 
 class StructType: public Type {
     public:
-        StructType():Type("struct"){}
+        string name; 
+        StructType(string n):Type("struct"), name(n){}
+        string get_name(){
+            return name;
+        }
 };
 
 

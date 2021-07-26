@@ -1,6 +1,13 @@
 {
     Beticas
     bs a ; 
-    Metrobus <bs> j
-    j[4] = elda
+    bs ~p;
+    Bus h {
+        bs a
+    };
+    h ~my;
+    new(my);
+    imprimir(&my)
+
+
 }

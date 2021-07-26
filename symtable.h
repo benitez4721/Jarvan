@@ -72,6 +72,7 @@ class sym_table {
 			insert("voltea", "func", new Int(),new extra_info_func(1, {new GenericList()}, false) );
 			insert("devalua", "func", new Float(),new extra_info_func(1, {new Int()}, false) );
 			insert("efectivo", "func", new Int(),new extra_info_func(1, {new Float()}, false) );
+			insert("new", "func", new Void(),new extra_info_func(1, {NULL}, false) );
 		};
 
 		int new_scope(){
@@ -209,9 +210,22 @@ class sym_table {
 			return new Type_Error();
 		}
 
-		Type * checkIndex(Node * a, Type * t, int line, int col, vector<string> &errors){
-			cout << a->type->get_simple_type() << endl; 
-			return new Type_Error();
+		bool checkIsValidType(Node * id, int line, int col, vector<string> &errors){
+			string id_name = dynamic_cast<Id*>(id)->id;
+			table_element * id_el = lookup(id_name);
+			if(id_el==NULL){
+
+				string error = "Error: variable " + id_name + " at line " + to_string(line) + ", column " + to_string(col) + ", has not been declared."+ "\n";
+				errors.push_back(error);
+				return false;
+			}
+			if(id_el->category != "struct"){
+				string error = "Error: '" + id_name + "' is not a type, at line " + to_string(line) + ", column " + to_string(col) + "\n";
+				errors.push_back(error);
+				return false;
+			}
+			return true;
+
 		}
 
 		void print(){		

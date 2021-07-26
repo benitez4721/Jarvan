@@ -137,7 +137,7 @@ Declaration         : Type Init                                                 
                                                                                     }                                                                    
                     | BUS Id OScope DeclarationList CScope                          { 
                                                                                         string id = dynamic_cast<Id*>($2)->id; 
-                                                                                        if(!st.insert(id, "struct", new StructType(), new extra_info_struct($3))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        if(!st.insert(id, "struct", new StructType(id), new extra_info_struct($3))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
                                                                                         $$ = new Declaration($2, $4);
                                                                                     }
                     | BULULU Id OScope DeclarationList CScope                       {
@@ -162,6 +162,16 @@ Declaration         : Type Init                                                 
                                                                                         $$ = new Declaration($2, NULL);
                                                                                         $$->setType($1)
                                                                                     }
+                    | Id POINTER Id                                                 {if(st.checkIsValidType($1, @$.first_line, @$.first_column, st_errors)){
+
+                                                                                        Id *idNode = dynamic_cast<Id*>($3); 
+                                                                                        Id *typeNode = dynamic_cast<Id*>($1); 
+                                                                                        string id = idNode->id;
+                                                                                        string type = typeNode->id;
+                                                                                        if(!st.insert(id, "Variable", new PointerType(new StructType(type)))){redeclared_variable(id, @$.first_line, @$.first_column);}; 
+                                                                                        $$ = new Declaration($3, NULL);
+                                                                                        $$->setType(new Type_Error());
+                    };}
                     ;
 
 Init                : Id ASIGN Exp                                          {$$ = new Asign($1, $3); }
@@ -257,8 +267,8 @@ Exp         : OPAR Exp CPAR                                                 {$$ 
 
             | Exp AND Exp                                                   {$$ = new BinaryExp($1, $3, "&&");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
             | Exp OR Exp                                                    {$$ = new BinaryExp($1, $3, "||");$$->setType(checkBoolType($1, $3, "&&", @$.first_line, @$.first_column))}
-            | NOT Exp                                                       {$$ = new Unary($2, "!")}
-            | MINUS Exp                                                     {$$ = new Unary($2, "-")}
+            | NOT Exp                                                       {$$ = new Unary($2, "!");$$->setType()}
+            | MINUS Exp                                                     {$$ = new Unary($2, "-");}
             | DEREFERENCE Id                                                {$$ = new Unary($2, "&")}
 
             | Exp EQUAL Exp                                                 {$$ = new BinaryExp($1, $3, "==");$$->setType(checkCompareType($1, $3, @$.first_line, @$.first_column))}
@@ -588,6 +598,14 @@ Type * checkFuncCall(Node * id, vector<Type*> args, int line, int col){
     }
     if(id_name == "sacale" || id_name == "voltea"){
         if(args[0]->get_simple_type() != "list"){
+            string error = "Error: no matching function for call to " + id_name + getArgsList(args);
+            st_errors.push_back(error);
+            return new Type_Error();
+        }
+        return new Void();
+    }
+    if(id_name == "new" ){
+        if(args[0]->get_simple_type() != "pointer"){
             string error = "Error: no matching function for call to " + id_name + getArgsList(args);
             st_errors.push_back(error);
             return new Type_Error();
