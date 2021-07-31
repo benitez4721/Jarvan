@@ -1,5 +1,6 @@
 #include <string>
-
+#include "types.h" 
+#include <vector>
 using namespace std;
 
 
@@ -7,7 +8,20 @@ string getTab(int tab);
 
 class Node {
     public:
+        Type *type = NULL;
+        int len;
+        vector<Type*> args;
         virtual string to_s(int tab, int tabAux = 0) { };
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
+        virtual void increment_size(int prev_len){
+           len = prev_len + 1;
+        };
+        virtual void add_arg(vector<Type*> arg_t, Type * n_arg){
+            args = arg_t;
+            args.push_back(n_arg);
+        };
 };
 
 class Unary : public Node {
@@ -16,6 +30,9 @@ class Unary : public Node {
         Node * exp;
         Unary(Node * exp, string op);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class VacilaIn : public Node {
@@ -25,6 +42,9 @@ class VacilaIn : public Node {
         Node * program;
         VacilaIn(Node * id, Node * exp, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Repeticion2 : public Node {
@@ -33,6 +53,9 @@ class Repeticion2 : public Node {
         Node * program;
         Repeticion2(Node * exp, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Repeticion : public Node {
@@ -44,6 +67,9 @@ class Repeticion : public Node {
         Node * program;
         Repeticion(Node * declaration, Node * exp1, Node * exp2, Node * id, Node * program);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class FunCall : public Node {
@@ -52,6 +78,9 @@ class FunCall : public Node {
         Node * args;
         FunCall(Node * , Node * args);
         string to_s(int tab, int tabAux = 0);
+        virtual void setType(Type *_type=NULL) {
+            type = _type;
+        }
 };
 
 class Params : public Node {
@@ -60,6 +89,7 @@ class Params : public Node {
         Node * param;
         Params(Node * l_params , Node * param);
         string to_s(int tab, int tabAux = 0);
+
 };
 
 class Chamba : public Node {
@@ -126,6 +156,9 @@ class Array : public Node {
         Node * l_array;
         Array(Node * l_array);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ArrayList : public Node {
@@ -134,6 +167,9 @@ class ArrayList : public Node {
         Node * exp;
         ArrayList(Node * l_exp, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Indexing : public Node {
@@ -142,6 +178,9 @@ class Indexing : public Node {
         Node * l_index;
         Indexing(Node * id, Node * l_index);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ListIndexing : public Node {
@@ -150,6 +189,9 @@ class ListIndexing : public Node {
         Node * exp;
         ListIndexing(Node * l_index, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class ListAccesor : public Node {
@@ -158,6 +200,9 @@ class ListAccesor : public Node {
         Node * accesor;
         ListAccesor(Node * l_accesor, Node * accesor);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Accesor : public Node{
@@ -181,6 +226,9 @@ class LiteralBool : public Node {
     public: 
         string value;
         LiteralBool(string value);
+        void setType(Type *type){
+           Node::setType(type);
+        };
         string to_s(int tab, int tabAux = 0);
 
 };
@@ -213,6 +261,9 @@ class LiteralInt : public Node {
     public: 
         int value;
         LiteralInt(int value);
+        void setType(Type *type){
+            Node::setType(type);
+        };
         string to_s(int tab, int tabAux = 0);
 
 };
@@ -230,12 +281,18 @@ class Asign : public Node {
         Node *exp;
         Asign(Node * id, Node * exp);
         string to_s(int tab, int tabAux = 0);
+        void setType(Type *type){
+           Node::setType(type);
+        };
 };
 
 class Id : public Node {
     public:
         string id;
         Id(string id);
+        void setType(Type *_type){
+            Node::setType(_type);
+        };
         string to_s(int tab, int tabAux = 0);
 };
 

@@ -1,0 +1,26 @@
+{
+    Beticas
+    Bus pasajero {
+        labia sexo;
+        int edad;
+    };
+    Metrobus <Bus pasajero {
+        Labia sexo;
+        int edad;
+    } > arr
+
+    vacila (bs i; i < "hola"; i + 1) {
+        metele(arr, i)
+    };
+
+    Chamba bs hol(h ~jj){
+        Beticas
+        h mystruct 
+        mystruct = &jj;
+        imprimir(mystruct.x);
+        rescata 6 
+    }
+    
+
+
+}

@@ -1,0 +1,28 @@
+{
+    Beticas
+    bs f;
+    bsf j;
+    Metrobus <bs> m;
+    Metro <bs [5]> met;
+    Bus pasajero {
+        Labia sexo;
+        bs edad
+    };
+    pasajero ~p;
+    pasajero myp 
+
+    myp = &p;
+
+    j = f[1];
+
+    f = myp.sexo;
+
+    Chamba qlq r(bs num){
+        porsia(!(num % 2 == 0) ){
+            rescata coba 
+        };
+        rescata elda 
+    };
+    r(5)
+
+}
